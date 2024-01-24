@@ -20,8 +20,22 @@ int main()
             p6::Center{ctx.mouse()},
             p6::Radius{0.2f}
         );
+        ctx.fill = {1, 0, 0, 0.5};
+        ctx.square(
+            p6::Center{0, 0}, p6::Radius{1.0f}
+        );
+        for (float i = 0; i < 5; i++)
+        {
+            ctx.fill = {0, 0, 1, 0.5};
+
+            // void triangle(Point2D, Point2D, Point2D, Center = {}, Rotation = {});
+            ctx.triangle(
+                p6::Point2D{0.1f, 0.1f}, p6::Point2D{0.3f, 0.2f}, p6::Point2D{0.2f, 0.3f}, p6::Center{p6::random::number(-1.f, 1.f), p6::random::number(-1.f, 1.f)}
+            );
+        }
     };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
+    // position = 1;
 }
