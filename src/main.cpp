@@ -27,10 +27,6 @@ int main()
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::Blue);
-        ctx.circle(
-            p6::Center{ctx.mouse()},
-            p6::Radius{0.2f}
-        );
         ctx.fill = {1, 0, 0, 0.5};
         ctx.square(
             p6::Center{0, 0}, p6::Radius{1.0f}
@@ -41,7 +37,7 @@ int main()
 
             // void triangle(Point2D, Point2D, Point2D, Center = {}, Rotation = {});
             ctx.triangle(
-                p6::Point2D{0.1f, 0.1f}, p6::Point2D{0.3f, 0.2f}, p6::Point2D{0.2f, 0.3f}, p6::Center{center[i].x, number[i].y}
+                p6::Point2D{0.1f, 0.1f}, p6::Point2D{0.25f, 0.2f}, p6::Point2D{0.2f, 0.25f}, p6::Center{center[i].x, number[i].y}
 
             );
         }
