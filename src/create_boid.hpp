@@ -7,8 +7,7 @@
 #include "p6/p6.h"
 
 // classe avec position et vitesse pour chaque boid
-class Boids()
-{
+class Boids {
 private:
     // Attribut
     glm::vec2 m_position;
@@ -18,4 +17,4 @@ public:
     // fonctions
     void speed();
     void position();
-}
+};
