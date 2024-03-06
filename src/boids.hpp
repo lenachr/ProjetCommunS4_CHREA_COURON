@@ -13,10 +13,10 @@ class Boids {
 private:
     // Attribut
     glm::vec2 m_position;
-    float     m_speed;
+    glm::vec2 m_speed;
 
 public:
-    // constructeur
+    // constructeurs
     Boids();
     Boids(glm::vec2 position, float speed);
     // destructeur
@@ -25,5 +25,5 @@ public:
     // fonctions
     glm::vec4 position();
     void      create(p6::Context* ctx, glm::vec4 position);
-    void      speed(float m_speed);
+    glm::vec4 speed(glm::vec2* m_speed, glm::vec4 position);
 };
