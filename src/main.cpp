@@ -2,7 +2,7 @@
 // #include "glm/fwd.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <vector>
-#include "boids.hpp"
+#include "boid.hpp"
 #include "doctest/doctest.h"
 #include "p6/p6.h"
 
