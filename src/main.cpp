@@ -22,8 +22,9 @@ int main()
     for (int i = 0; i < 10; i++)
     {
         boids.push_back(Boid{
-            /*position = */ glm::vec2{p6::random::number(-1.1f, 0.75f), p6::random::number(-1.1f, 0.75f)},
+            /*position = */ glm::vec2{p6::random::number(-1.f, 0.7f), p6::random::number(-1.f, 0.7f)},
             /*rotation =*/glm::vec2{p6::random::number(-0.9f, 0.9f), p6::random::number(-0.9f, 0.9f)},
+            // glm::vec2{0.f, 0.f},
             /*speed = */ glm::vec2(p6::random::number(-0.005f, 0.005f), p6::random::number(-0.005f, 0.005f)),
         });
     }
@@ -37,7 +38,6 @@ int main()
         );
         for (int i = 0; i < boids.size(); i++)
         {
-            // positions[i] = boids.speed(&speeds[i], positions[i]);
             boids[i].draw(&ctx);
             boids[i].update(boids);
         }

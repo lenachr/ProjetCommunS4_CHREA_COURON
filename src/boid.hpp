@@ -13,10 +13,12 @@ public:
     ~Boid();
 
 private:
-    void apply_speed();
-    void separation(const std::vector<Boid>& allBoid, double separationDistance);
+    void   apply_speed();
+    void   separation(const std::vector<Boid>& allBoid, double separationDistance);
+    void   alignement(const std::vector<Boid>& allBoid, double alignmentDistance);
+    double angleDifference(const Boid& boid1, const Boid& boid2);
 
-    double distance(const Boid& boid1, const Boid& boid2);
+    float distance(const Boid& boid1, const Boid& boid2);
 
 private:
     glm::vec2 position;
