@@ -1,10 +1,13 @@
 #include "boid.hpp"
 #include <cmath>
+#include "glm/fwd.hpp"
 
 void Boid::draw(p6::Context* ctx)
 {
     ctx->triangle(
-        p6::Point2D{0.1f, 0.1f}, p6::Point2D{0.25f, 0.2f}, p6::Point2D{0.2f, 0.25f}, p6::Center{position}, p6::Rotation{rotation}
+        p6::Point2D{-0.05f, 0.035f}, p6::Point2D{-0.05f, -0.035f}, p6::Point2D{0.05f, 0.f}, p6::Center{position}, p6::Rotation{speed}
+
+        // p6::Point2D{0.1f, 0.1f}, p6::Point2D{0.25f, 0.2f}, p6::Point2D{0.2f, 0.25f}, p6::Center{position}
     );
 }
 
@@ -16,8 +19,11 @@ Boid::~Boid()
 // Methode qui gère les mouvements
 void Boid::apply_speed()
 {
+    position.x += speed.x;
+    position.y += speed.y;
+
     // // Si contact mur haut
-    if (position.y > 0.75f) // 0.75f
+    if (position.y > 1.f) // 0.75f
     {
         position.y = -1.1f;
     }
@@ -36,17 +42,12 @@ void Boid::apply_speed()
     {
         position.x = -0.9f;
     }
-    // On retourne la nouvelle position
-    position.x += speed.x;
-    position.y += speed.y;
 }
 
 float Boid::distance(const Boid& boid1, const Boid& boid2)
 {
     return std::sqrt((boid2.position.x - boid1.position.x) * (boid2.position.x - boid1.position.x) + (boid2.position.y - boid1.position.y) * (boid2.position.y - boid1.position.y));
 }
-
-// #include <vector>
 
 void Boid::separation(const std::vector<Boid>& allBoid, double separationDistance)
 {
@@ -73,37 +74,10 @@ void Boid::separation(const std::vector<Boid>& allBoid, double separationDistanc
     position += totalSeparation;
 }
 
-double Boid::angleDifference(const Boid& boid1, const Boid& boid2)
-{
-    double angle1 = std::atan2(boid1.rotation.y, boid1.rotation.x) * 180.0 / 3.14;
-    double angle2 = std::atan2(boid2.rotation.y, boid2.rotation.x) * 180.0 / 3.14;
-
-    // Assurez-vous que les angles sont dans la plage [0, 360)
-    while (angle1 < 0)
-        angle1 += 360.0;
-    while (angle1 >= 360.0)
-        angle1 -= 360.0;
-    while (angle2 < 0)
-        angle2 += 360.0;
-    while (angle2 >= 360.0)
-        angle2 -= 360.0;
-
-    // Calcule la différence d'angle entre angle2 et angle1
-    double diff = angle2 - angle1;
-
-    // Assurez-vous que la différence d'angle est dans la plage [-180, 180)
-    while (diff < -180.0)
-        diff += 360.0;
-    while (diff >= 180.0)
-        diff -= 360.0;
-
-    return diff;
-}
-
 void Boid::alignement(const std::vector<Boid>& allBoid, double alignmentDistance)
 {
-    double averageAngle  = 0.0;
-    int    neighborCount = 0;
+    glm::vec2 averageAngle(0.0, 0.0);
+    int       neighborCount = 0;
 
     for (const Boid& otherBoid : allBoid)
     {
@@ -113,11 +87,8 @@ void Boid::alignement(const std::vector<Boid>& allBoid, double alignmentDistance
 
             if (dist < alignmentDistance)
             {
-                // Calculer la différence d'angle avec le boid voisin
-                double angleDiff = angleDifference(*this, otherBoid);
-
                 // Ajouter à la somme totale des angles
-                averageAngle += angleDiff;
+                averageAngle += otherBoid.speed;
                 neighborCount++;
             }
         }
@@ -127,13 +98,45 @@ void Boid::alignement(const std::vector<Boid>& allBoid, double alignmentDistance
     if (neighborCount > 0)
     {
         averageAngle /= neighborCount;
-        this->rotation += 2 * averageAngle; // someFactor est un coefficient d'ajustement
+        this->speed = averageAngle;
     }
 }
 
-void Boid::update(const std::vector<Boid>& allBoid)
+void Boid::cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, double cohesionFactor)
+{
+    glm::vec2 centerOfMass(0.0, 0.0);
+    int       neighborCount = 0;
+
+    for (const Boid& otherBoid : allBoids)
+    {
+        if (this != &otherBoid)
+        {
+            float dist = distance(*this, otherBoid);
+
+            if (dist < cohesionDistance)
+            {
+                // Ajouter à la somme totale des angles
+                centerOfMass += otherBoid.position;
+                neighborCount++;
+            }
+        }
+    }
+
+    // Si des voisins ont été trouvés, ajuster l'angle moyen du boid actuel
+    if (neighborCount > 0)
+    {
+        centerOfMass /= neighborCount;
+        glm::vec2 cohesionDirection = centerOfMass - position;
+
+        // Ajuster la position du boid pour se diriger vers le centre de masse
+        this->speed += static_cast<float>(cohesionFactor) * cohesionDirection;
+    }
+}
+
+void Boid::update(const std::vector<Boid>& allBoids)
 {
     apply_speed();
-    separation(allBoid, 0.01);
-    alignement(allBoid, 0.01);
+    separation(allBoids, 0.01);
+    alignement(allBoids, 0.1);
+    cohesion(allBoids, 0.1, 0.01);
 }

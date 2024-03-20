@@ -4,8 +4,8 @@
 
 class Boid {
 public:
-    Boid(glm::vec2 position, glm::vec2 rotation, glm::vec2 speed)
-        : position{position}, rotation{rotation}, speed{speed}
+    Boid(glm::vec2 position, glm::vec2 speed)
+        : position{position}, speed{speed}
     {}
 
     void draw(p6::Context* ctx);
@@ -17,11 +17,10 @@ private:
     void   separation(const std::vector<Boid>& allBoid, double separationDistance);
     void   alignement(const std::vector<Boid>& allBoid, double alignmentDistance);
     double angleDifference(const Boid& boid1, const Boid& boid2);
-
-    float distance(const Boid& boid1, const Boid& boid2);
+    float  distance(const Boid& boid1, const Boid& boid2);
+    void   cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, double cohesionFactor);
 
 private:
     glm::vec2 position;
-    glm::vec2 rotation;
     glm::vec2 speed;
 };

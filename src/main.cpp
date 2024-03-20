@@ -19,12 +19,11 @@ int main()
     // initialisation des boids
     std::vector<Boid> boids{};
     // Ajout dans le vector des position aléatoire pour les boids
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 30; i++)
     {
         boids.push_back(Boid{
             /*position = */ glm::vec2{p6::random::number(-1.f, 0.7f), p6::random::number(-1.f, 0.7f)},
-            /*rotation =*/glm::vec2{p6::random::number(-0.9f, 0.9f), p6::random::number(-0.9f, 0.9f)},
-            // glm::vec2{0.f, 0.f},
+            // /*rotation =*/glm::vec2{p6::random::number(-0.9f, 0.9f), p6::random::number(-0.9f, 0.9f)},
             /*speed = */ glm::vec2(p6::random::number(-0.005f, 0.005f), p6::random::number(-0.005f, 0.005f)),
         });
     }
@@ -45,5 +44,4 @@ int main()
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
-    // position = 1;
 }
