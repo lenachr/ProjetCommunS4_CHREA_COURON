@@ -6,8 +6,6 @@ void Boid::draw(p6::Context* ctx)
 {
     ctx->triangle(
         p6::Point2D{-0.05f, 0.035f}, p6::Point2D{-0.05f, -0.035f}, p6::Point2D{0.05f, 0.f}, p6::Center{position}, p6::Rotation{speed}
-
-        // p6::Point2D{0.1f, 0.1f}, p6::Point2D{0.25f, 0.2f}, p6::Point2D{0.2f, 0.25f}, p6::Center{position}
     );
 }
 
@@ -23,24 +21,24 @@ void Boid::apply_speed()
     position.y += speed.y;
 
     // // Si contact mur haut
-    if (position.y > 1.f) // 0.75f
+    if (position.y > 0.95f) // 0.75f
     {
-        position.y = -1.1f;
+        position.y = -0.95f;
     }
     // // Si contact mur bas
-    if (position.y < -1.1f) //-1.1f
+    if (position.y < -0.95f) //-1.1f
     {
-        position.y = 0.75f;
+        position.y = 0.95f;
     }
     // // Si contact mur gauche
-    if (position.x < -0.9f) //-1.1f
+    if (position.x < -0.95f) //-1.1f
     {
-        position.x = 0.75f;
+        position.x = 0.95f;
     }
     // // Si contact mur droit
-    if (position.x > 0.75f) // 0.75f
+    if (position.x > 0.95f) // 0.75f
     {
-        position.x = -0.9f;
+        position.x = -0.95f;
     }
 }
 
@@ -49,37 +47,12 @@ float Boid::distance(const Boid& boid1, const Boid& boid2)
     return std::sqrt((boid2.position.x - boid1.position.x) * (boid2.position.x - boid1.position.x) + (boid2.position.y - boid1.position.y) * (boid2.position.y - boid1.position.y));
 }
 
-void Boid::separation(const std::vector<Boid>& allBoid, double separationDistance)
-{
-    glm::vec2 totalSeparation{0.f};
-
-    for (const Boid& otherBoid : allBoid)
-    {
-        if (this != &otherBoid)
-        {
-            float dist = distance(*this, otherBoid);
-
-            if (dist < separationDistance)
-            {
-                // Calculer la contribution à la séparation
-                float separationForce = 1.0f / dist;
-
-                // Ajouter à la somme totale
-                totalSeparation += (position - otherBoid.position) * separationForce;
-            }
-        }
-    }
-
-    // Appliquer la séparation aux coordonnées du boid
-    position += totalSeparation;
-}
-
-void Boid::alignement(const std::vector<Boid>& allBoid, double alignmentDistance)
+void Boid::alignement(const std::vector<Boid>& allBoids, double alignmentDistance)
 {
     glm::vec2 averageAngle(0.0, 0.0);
     int       neighborCount = 0;
 
-    for (const Boid& otherBoid : allBoid)
+    for (const Boid& otherBoid : allBoids)
     {
         if (this != &otherBoid)
         {
@@ -94,10 +67,11 @@ void Boid::alignement(const std::vector<Boid>& allBoid, double alignmentDistance
         }
     }
 
-    // Si des voisins ont été trouvés, ajuster l'angle moyen du boid actuel
+    // Si des voisins ont été trouvés
     if (neighborCount > 0)
     {
         averageAngle /= neighborCount;
+        // Ajuster l'angle moyen du boid actuel
         this->speed = averageAngle;
     }
 }
@@ -122,21 +96,58 @@ void Boid::cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, 
         }
     }
 
-    // Si des voisins ont été trouvés, ajuster l'angle moyen du boid actuel
+    // Si des voisins ont été trouvés
     if (neighborCount > 0)
     {
         centerOfMass /= neighborCount;
         glm::vec2 cohesionDirection = centerOfMass - position;
 
-        // Ajuster la position du boid pour se diriger vers le centre de masse
+        // Ajuster la vitesse du boid pour se diriger vers le centre de masse
         this->speed += static_cast<float>(cohesionFactor) * cohesionDirection;
     }
 }
 
-void Boid::update(const std::vector<Boid>& allBoids)
+void Boid::separation(const std::vector<Boid>& allBoids, float separationDistance, float separationFactor)
+{
+    glm::vec2 separation(0.0f, 0.0f);
+    int       neighborCount = 0;
+
+    for (const Boid& otherBoid : allBoids)
+    {
+        if (this != &otherBoid)
+        {
+            float dist = distance(*this, otherBoid);
+
+            if (dist < separationDistance)
+            {
+                // Calculer le vecteur différence entre les positions
+                glm::vec2 diff;
+                diff.x = position.x - otherBoid.position.x;
+                diff.y = position.y - otherBoid.position.y;
+                diff.x /= dist;
+                diff.y /= dist;
+
+                // Ajouter le vecteur différence au vecteur de direction de l'évitement
+                separation.x += diff.x;
+                separation.y += diff.y;
+                neighborCount++;
+            }
+        }
+    }
+
+    // Si des voisins ont été trouvés
+    if (neighborCount > 0)
+    {
+        // Ajuster la position du boid pour se déplacer dans la direction opposée à celle des voisins proches
+        this->position.x += separationFactor * separation.x;
+        this->position.y += separationFactor * separation.y;
+    }
+}
+
+void Boid::update(const std::vector<Boid>& allBoids, float alignement_coeff, float cohesion_coeff, float separation_coeff)
 {
     apply_speed();
-    separation(allBoids, 0.01);
-    alignement(allBoids, 0.1);
-    cohesion(allBoids, 0.1, 0.01);
+    alignement(allBoids, alignement_coeff);
+    cohesion(allBoids, cohesion_coeff, 0.01);
+    separation(allBoids, separation_coeff, 0.1f);
 }
