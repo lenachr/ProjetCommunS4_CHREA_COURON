@@ -9,7 +9,7 @@
 
 class Boid {
 public:
-    Boid(glm::vec2 position, glm::vec2 speed)
+    Boid(glm::vec3 position, glm::vec3 speed)
         : position{position}, speed{speed}
     {}
 
@@ -25,6 +25,6 @@ private:
     void  cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, double cohesionFactor);
 
 private:
-    glm::vec2 position;
-    glm::vec2 speed;
+    glm::vec3 position;
+    glm::vec3 speed;
 };

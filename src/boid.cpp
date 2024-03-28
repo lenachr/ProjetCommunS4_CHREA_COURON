@@ -5,7 +5,7 @@ void Boid::draw(p6::Context* ctx, GLuint vao, GLsizei vertexCount, glm::vec3 tra
     // ctx->triangle(
     // p6::Point2D{-0.05f, 0.035f}, p6::Point2D{-0.05f, -0.035f}, p6::Point2D{0.05f, 0.f}, p6::Center{position}, p6::Rotation{speed}
     // );
-    renderObject(vao, vertexCount, translation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID);
+    renderObject(vao, vertexCount, position, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID);
 }
 
 // destructeur
@@ -20,24 +20,24 @@ void Boid::apply_speed()
     position.y += speed.y;
 
     // // Si contact mur haut
-    if (position.y > 0.95f) // 0.75f
+    if (position.y > -50.0f) // 0.75f
     {
-        position.y = -0.95f;
+        position.y = 50.0f;
     }
     // // Si contact mur bas
-    if (position.y < -0.95f) //-1.1f
+    if (position.y < -50.0f) //-1.1f
     {
-        position.y = 0.95f;
+        position.y = 50.0f;
     }
     // // Si contact mur gauche
-    if (position.x < -0.95f) //-1.1f
+    if (position.x < -50.0f) //-1.1f
     {
-        position.x = 0.95f;
+        position.x = 50.0f;
     }
     // // Si contact mur droit
-    if (position.x > 0.95f) // 0.75f
+    if (position.x > 50.0f) // 0.75f
     {
-        position.x = -0.95f;
+        position.x = -50.0f;
     }
 }
 
@@ -48,7 +48,7 @@ float Boid::distance(const Boid& boid1, const Boid& boid2)
 
 void Boid::alignement(const std::vector<Boid>& allBoids, double alignmentDistance)
 {
-    glm::vec2 averageAngle(0.0, 0.0);
+    glm::vec3 averageAngle(0.0f, 0.0f, 0.0f);
     int       neighborCount = 0;
 
     for (const Boid& otherBoid : allBoids)
@@ -77,7 +77,7 @@ void Boid::alignement(const std::vector<Boid>& allBoids, double alignmentDistanc
 
 void Boid::cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, double cohesionFactor)
 {
-    glm::vec2 centerOfMass(0.0, 0.0);
+    glm::vec3 centerOfMass(0.0f, 0.0f, 0.0f);
     int       neighborCount = 0;
 
     for (const Boid& otherBoid : allBoids)
@@ -99,7 +99,7 @@ void Boid::cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, 
     if (neighborCount > 0)
     {
         centerOfMass /= neighborCount;
-        glm::vec2 cohesionDirection = centerOfMass - position;
+        glm::vec3 cohesionDirection = centerOfMass - position;
 
         // Ajuster la vitesse du boid pour se diriger vers le centre de masse
         this->speed += static_cast<float>(cohesionFactor) * cohesionDirection;
@@ -108,7 +108,7 @@ void Boid::cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, 
 
 void Boid::separation(const std::vector<Boid>& allBoids, float separationDistance, float separationFactor)
 {
-    glm::vec2 separation(0.0f, 0.0f);
+    glm::vec3 separation(0.0f, 0.0f, 0.0f);
     int       neighborCount = 0;
 
     for (const Boid& otherBoid : allBoids)
@@ -120,7 +120,7 @@ void Boid::separation(const std::vector<Boid>& allBoids, float separationDistanc
             if (dist < separationDistance)
             {
                 // Calculer le vecteur différence entre les positions
-                glm::vec2 diff;
+                glm::vec3 diff;
                 diff.x = position.x - otherBoid.position.x;
                 diff.y = position.y - otherBoid.position.y;
                 diff.x /= dist;

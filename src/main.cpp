@@ -47,9 +47,9 @@ int main()
     for (int i = 0; i < 50; i++)
     {
         boids.push_back(Boid{
-            /*position = */ glm::vec2{p6::random::number(-1.f, 0.7f), p6::random::number(-1.f, 0.7f)},
+            /*position = */ glm::vec3{p6::random::number(-50.f, 50.0f), p6::random::number(70.f, 100.f), p6::random::number(-50.f, 50.0f)},
             /*speed = */
-            glm::vec2(p6::random::number(-0.005f, 0.001f), p6::random::number(-0.005f, 0.001f)),
+            glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
         });
     }
 
@@ -223,7 +223,7 @@ int main()
             boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[9]);
 
             // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[2]);
-            // boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
+            boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
         }
 
         // Boucle pour les arbres
