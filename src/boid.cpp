@@ -1,12 +1,11 @@
 #include "boid.hpp"
-#include <cmath>
-#include "glm/fwd.hpp"
 
-void Boid::draw(p6::Context* ctx)
+void Boid::draw(p6::Context* ctx, GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, TreeProgram& TreeProgram, GLuint textureID)
 {
-    ctx->triangle(
-        p6::Point2D{-0.05f, 0.035f}, p6::Point2D{-0.05f, -0.035f}, p6::Point2D{0.05f, 0.f}, p6::Center{position}, p6::Rotation{speed}
-    );
+    // ctx->triangle(
+    // p6::Point2D{-0.05f, 0.035f}, p6::Point2D{-0.05f, -0.035f}, p6::Point2D{0.05f, 0.f}, p6::Center{position}, p6::Rotation{speed}
+    // );
+    renderObject(vao, vertexCount, translation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID);
 }
 
 // destructeur

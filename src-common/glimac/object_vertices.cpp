@@ -20,6 +20,9 @@ std::vector<ShapeVertex> tree_vertices(float size) // NOLINT(bugprone-easily-swa
     // Déplacer la sphère vers le haut pour la placer au-dessus du rectangle
     for (auto& vertex : sphere)
     {
+        // vertex.position.x = -vertex.position.x;
+        vertex.position.y = -vertex.position.y;
+        vertex.position.z = -vertex.position.z;
         vertex.position.y += 9.5f * size; // décalage vertical pour placer la sphère au-dessus du rectangle
     }
 
@@ -120,89 +123,89 @@ std::vector<ShapeVertex> boids_vertices(float size)
     // partie haute
     std::vector<ShapeVertex> boidHaut{
         // Triangle gauche
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                     // point du haut
+        {{-size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},                   // point bas gauche
+        {{-0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.15f}}, // point milieu gauche
         // Triangle centre Gauche
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                     // point du haut
+        {{-0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.15f}}, // point milieu gauche
+        {{0.f, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                    // point bas
         // Triangle centre Droit
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                    // point du haut
+        {{0.f, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                   // point bas
+        {{0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.15f}}, // point milieu droit
         // Triangle droit
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                    // point du haut
+        {{0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.15f}}, // point milieu droit
+        {{size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {1.f, 0.f}},                   // point bas droit
 
     };
     // partie basse
     std::vector<ShapeVertex> boidBas{
         // Triangle gauche
-        {{0.f, size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                     // point du haut
+        {{-size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},                   // point bas gauche
+        {{-0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.15f}}, // point milieu gauche
         // Triangle centre Gauche
-        {{0.f, size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                     // point du haut
+        {{-0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.15f}}, // point milieu gauche
+        {{0.f, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                    // point bas
         // Triangle centre Droit
-        {{0.f, size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                    // point du haut
+        {{0.f, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                   // point bas
+        {{0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.15f}}, // point milieu droit
         // Triangle droit
-        {{0.f, size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},                    // point du haut
+        {{0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.15f}}, // point milieu droit
+        {{size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {1.f, 0.f}},                   // point bas droit
 
     };
 
     // partie entre les deux
     std::vector<ShapeVertex> boidFill{
         // extérieur gauche
-        {{0.f, size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.4f, 1.f}},    // point du haut face 1
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},     // point du haut face 1
+        {{-size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.f, 0.1f}}, // point bas gauche face 2
+        {{-size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.f, 0.1f}}, // point bas gauche face 2
+        {{-size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},   // point bas gauche face 2
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},     // point du haut face 1
         // extérieur centre gauche
-        {{-size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{-size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.f, 0.1f}},                   // point bas gauche face 2
+        {{-size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.1f, 0.f}},                  // point bas gauche face 2
+        {{-0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.05f}}, // point milieu gauche face 3
+        {{-0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.05f}}, // point milieu gauche face 3
+        {{-0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.15f}},  // point milieu gauche face 3
+        {{-size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.f, 0.1f}},                   // point bas gauche face 2
 
-        {{-0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{-0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{-0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.05f}}, // point milieu gauche face 3
+        {{-0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.15f}},  // point milieu gauche face 3
+        {{0.f, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                    // point bas face 4
+        {{0.f, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                    // point bas face 4
+        {{0.f, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.1f}},                    // point bas face 4
+        {{-0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.35f, 0.15f}},  // point milieu gauche face 3
 
         // extérieur centre droit
-        {{size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {1.f, 0.f}},                    // point bas droit face 2
+        {{size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.9f, 0.1f}},                 // point bas droit face 2
+        {{0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.05f}}, // point milieu droit face 3
+        {{0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.05f}}, // point milieu droit face 3
+        {{0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.15f}},  // point milieu droit face 3
+        {{size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {1.f, 0.f}},                    // point bas droit face 2
 
-        {{0.3f * size, -0.7f * size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.3f * size, -0.7f * size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.3f * size, -0.7f * size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.05f}}, // point milieu droit face 3
+        {{0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.15f}},  // point milieu droit face 3
+        {{0.f, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                   // point bas face 4
+        {{0.f, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.f}},                   // point bas face 4
+        {{0.f, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 0.1f}},                   // point bas face 4
+        {{0.3f * size, -0.7f * size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.65f, 0.15f}},  // point milieu droit face 3
         // extérieur droit
-        {{0.f, size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{size, -size, -0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{size, -size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
-        {{0.f, size, 0.2f * size}, {0.f, 0.f, 1.f}, {0.f, 0.f}},
+        {{0.f, size, -0.1f * size}, {0.f, 0.f, 1.f}, {0.6f, 1.f}},   // point du haut face 1
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},    // point du haut face 1
+        {{size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {1.f, 0.1f}}, // point bas droit face 2
+        {{size, -size, -0.1f * size}, {0.f, 0.f, 1.f}, {1.f, 0.1f}}, // point bas droit face 2
+        {{size, -size, 0.1f * size}, {0.f, 0.f, 1.f}, {1.f, 0.f}},   // point bas droit face 2
+        {{0.f, size, 0.1f * size}, {0.f, 0.f, 1.f}, {0.5f, 1.f}},    // point du haut face 1
     };
 
     std::vector<ShapeVertex>
