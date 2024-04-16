@@ -17,6 +17,10 @@
 #include "renderObject.hpp"
 #include "treeProgram.hpp"
 
+// double lastMouseX        = 0.0;
+// double lastMouseY        = 0.0;
+// bool   isMouseButtonDown = false;
+
 int main()
 {
     auto ctx = p6::Context{{1280, 720, "Test objects"}};
@@ -25,11 +29,6 @@ int main()
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
-    // const p6::Shader shader = p6::load_shader(
-    //     // shaders exo01
-    //     "shaders/3D.vs.glsl",
-    //     "shaders/normals.fs.glsl"
-    // );
 
     // Initilaisation des boids
     std::cout << "1\n";
@@ -154,36 +153,74 @@ int main()
         // Interactions clavier
         if (ctx.key_is_pressed(GLFW_KEY_W))
         {
-            freeflyCamera.moveFront(0.1);
+            freeflyCamera.moveFront(0.5);
         }
         if (ctx.key_is_pressed(GLFW_KEY_S))
         {
-            freeflyCamera.moveFront(-0.1);
+            freeflyCamera.moveFront(-0.5);
         }
         if (ctx.key_is_pressed(GLFW_KEY_A))
         {
-            freeflyCamera.moveLeft(0.05);
+            freeflyCamera.moveLeft(0.5);
         }
         if (ctx.key_is_pressed(GLFW_KEY_D))
         {
-            freeflyCamera.moveLeft(-0.05);
+            freeflyCamera.moveLeft(-0.5);
         }
         if (ctx.key_is_pressed(GLFW_KEY_LEFT))
         {
-            freeflyCamera.rotateLeft(20.f);
+            freeflyCamera.rotateLeft(50.f);
         }
         if (ctx.key_is_pressed(GLFW_KEY_RIGHT))
         {
-            freeflyCamera.rotateLeft(-20.f);
+            freeflyCamera.rotateLeft(-50.f);
         }
         if (ctx.key_is_pressed(GLFW_KEY_UP))
         {
-            freeflyCamera.rotateUp(20.f);
+            freeflyCamera.rotateUp(50.f);
         }
         if (ctx.key_is_pressed(GLFW_KEY_DOWN))
         {
-            freeflyCamera.rotateUp(-20.f);
+            freeflyCamera.rotateUp(-50.f);
         }
+
+        // if (ctx.mouse_button_is_pressed(p6::Button::Left))
+        // {
+        //     if(button.position.x <0)
+        //     // on regarde où se situe la souris
+        //     double mouseX, mouseY;
+        //     glfwGetCursorPos(ctx.get_window(), &mouseX, &mouseY);
+        //     isMouseButtonDown = true;
+        //     // glfwGetCursorPos(ctx.get_window(), &lastMouseX, &lastMouseY);
+        // }
+        // // Détecter quand le bouton gauche de la souris est relâché
+        // if (!ctx.mouse_button_is_pressed(p6::Button::Left))
+        // {
+        //     isMouseButtonDown = false;
+        // }
+
+        // // Si le bouton gauche de la souris est enfoncé, mettre à jour la rotation de la caméra
+        // if (isMouseButtonDown)
+        // {
+        //     double mouseX, mouseY;
+        //     // glfwGetCursorPos(ctx.get_window(), &mouseX, &mouseY);
+
+        //     double deltaX = mouseX - lastMouseX;
+        //     double deltaY = mouseY - lastMouseY;
+
+        //     // Ajouter les deltas à la rotation de la caméra
+        //     freeflyCamera.rotateLeft(deltaX);
+        //     freeflyCamera.rotateUp(deltaY);
+
+        //     // Mettre à jour les dernières positions de la souris
+        //     lastMouseX = mouseX;
+        //     lastMouseY = mouseY;
+        // }
+        // else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+        // {
+        //     isMouseButtonDown = false;
+        //     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // Réafficher le curseur lorsque le clic est relâché
+        // }
 
         glClearColor(0.0f, 0.3f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -197,9 +234,6 @@ int main()
         ImGui::SliderFloat("Cohesion distance", &cohesion_coeff, 0, 0.3);
         ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 0.1);
         ImGui::End();
-        // ctx.background(p6::NamedColor::Blue);
-        // ctx.fill = {1, 0, 0, 0.5};
-        // ctx.square(p6::Center{0, 0}, p6::Radius{1.0f});
 
         // Calcul viewMatrix
 
@@ -253,6 +287,7 @@ int main()
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
+
     glDeleteBuffers(1, &vboBench);
     glDeleteBuffers(1, &vboHouse);
     // glDeleteBuffers(1, &vboBoid);

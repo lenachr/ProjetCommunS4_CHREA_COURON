@@ -21,13 +21,18 @@ void main() {
     vec4 vertexPosition = vec4(aVertexPosition, 1.);
     vec4 vertexNormal = vec4(aVertexNormal, 0.);
 
+    vColor = (vertexNormal.xyz); 
+    vTexCoords = aVertexTexCoords;
+    vTexCoords = vec2(aVertexTexCoords.x, 1.0 - aVertexTexCoords.y);
     // vColor = (vertexNormal.xyz); 
-    vColor = vec3(1.f); 
+    // vColor = vec3(1.f); 
 
     // Calcul des valeurs de sortie
+    // vPosition_vs = vec3(uMVMatrix * vertexPosition);
+    // vNormal_vs = vec3(uNormalMatrix * vertexNormal);
     vPosition_vs = vec3(uMVMatrix * vertexPosition);
     vNormal_vs = vec3(uNormalMatrix * vertexNormal);
-    vTexCoords = aVertexTexCoords;
+    // vTexCoords = aVertexTexCoords;
 
     // Calcul de la position projetée
     gl_Position = uMVPMatrix * vertexPosition;

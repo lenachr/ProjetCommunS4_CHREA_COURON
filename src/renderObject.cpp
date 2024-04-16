@@ -60,10 +60,21 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat
     glm::mat4 MVMatrix = viewMatrix * glm::translate(glm::mat4(1.0f), translation);
     NormalMatrix       = glm::transpose(glm::inverse(MVMatrix));
 
+    // Lumière ambiante
+    glm::vec3 lightPosition = glm::vec3(0, 80, 0);
+    lightPosition           = glm::vec3(viewMatrix * glm::vec4(lightPosition, 1.0f)); // Transformation de la position par la matrice de vue
+
     // Set shader uniforms
     glUniformMatrix4fv(TreeProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
     glUniformMatrix4fv(TreeProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
     glUniformMatrix4fv(TreeProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+
+    glUseProgram(TreeProgram.m_Program.id());
+    glUniform3fv(TreeProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
+    glUniform3f(TreeProgram.uLightIntensity, 100.0f, 100.0f, 100.0f); // Intensité de la lumière blanche
+    glUniform3f(TreeProgram.uKd, 10.f, 10.f, 10.f);                   // Coefficients de réflexion diffuse
+    glUniform3f(TreeProgram.uKs, 10.f, 10.f, 10.f);                   // Coefficients de réflexion spéculaire
+    glUniform1f(TreeProgram.uShininess, 32.0f);                       // Exposant de brillance
 
     // Bind VAO and draw
     glBindVertexArray(vao);
