@@ -6,6 +6,9 @@ in vec3 vPosition_vs;
 // out vec2 coord_textures;
 
 out vec4 fFragColor;
+// la texture
+uniform sampler2D uTexture;
+// les paramètres de la lumière
 uniform vec3 uKd;
 uniform vec3 uKs;
 uniform float uShininess;
@@ -34,7 +37,11 @@ vec3 blinnPhong(vec3 vNormal_vs, vec3 vPosition_vs, vec3 uLightIntensity, float 
 void main()
 {
     // fFragColor = texture(uTexture, vTexCoords);
+    vec4 texture = texture(uTexture, vTexCoords);
+
     vec3 color = blinnPhong(vNormal_vs, vPosition_vs, uLightIntensity, uShininess, uKd, uKs); 
-    fFragColor= vec4 (color, 1.0f);
+    // fFragColor= vec4 (color, 1.0f);
+    fFragColor = vec4(mix(texture.rgb, color, 0.8f), texture.a);
+
     // fFragColor = vec4(0.1f, 1.0f, 0.5f, 0.5f);
 }

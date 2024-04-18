@@ -9,6 +9,7 @@
 #include <vector>
 #include "boid.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
+#include "RandomGenerator.hpp"
 #include "doctest/doctest.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -19,7 +20,17 @@
 
 // double lastMouseX        = 0.0;
 // double lastMouseY        = 0.0;
-// bool   isMouseButtonDown = false;
+bool mousePressed      = false;
+bool collisionDetected = false;
+
+// Fonction pour détecter la collision entre le personnage et un arbre
+bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treePosition, float characterRadius, float treeRadius)
+{
+    // Calculer la distance entre le personnage et l'arbre
+    float distance = glm::length(characterPosition - treePosition);
+    // Si la distance est inférieure à la somme des rayons du personnage et de l'arbre, il y a collision
+    return distance < (characterRadius + treeRadius);
+}
 
 int main()
 {
@@ -29,6 +40,8 @@ int main()
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
+    // Initialisation du générateur de nombres aléatoires
+    srand(static_cast<unsigned>(time(nullptr)));
 
     // Initilaisation des boids
     std::cout << "1\n";
@@ -130,16 +143,18 @@ int main()
     glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
     glm::vec3 houseTranslation(0.0f, 0.0f, 10.0f);
 
-    const float minXTree = -40.0f;
-    const float maxXTree = 40.0f;
-    const float minZTree = -40.0f;
-    const float maxZTree = 40.0f;
+    // const float minXTree = -40.0f;
+    // const float maxXTree = 40.0f;
+    // const float minZTree = -40.0f;
+    // const float maxZTree = 40.0f;
 
     std::vector<glm::vec3> treeTranslation;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 100; i++)
     {
-        float randXTree = minXTree + static_cast<float>(rand()) / (RAND_MAX / (maxXTree - minXTree));
-        float randZTree = minZTree + static_cast<float>(rand()) / (RAND_MAX / (maxZTree - minZTree));
+        float randXTree = generateRandomPositionTree();
+
+        float randZTree = generateRandomPositionTree();
+
         treeTranslation.push_back(glm::vec3(randXTree, 2.0f, randZTree));
     }
 
@@ -151,76 +166,56 @@ int main()
          * HERE SHOULD COME THE RENDERING CODE
          *********************************/
         // Interactions clavier
-        if (ctx.key_is_pressed(GLFW_KEY_W))
+        if (!collisionDetected)
         {
-            freeflyCamera.moveFront(0.5);
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_S))
-        {
-            freeflyCamera.moveFront(-0.5);
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_A))
-        {
-            freeflyCamera.moveLeft(0.5);
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_D))
-        {
-            freeflyCamera.moveLeft(-0.5);
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_LEFT))
-        {
-            freeflyCamera.rotateLeft(50.f);
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_RIGHT))
-        {
-            freeflyCamera.rotateLeft(-50.f);
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_UP))
-        {
-            freeflyCamera.rotateUp(50.f);
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_DOWN))
-        {
-            freeflyCamera.rotateUp(-50.f);
+            if (ctx.key_is_pressed(GLFW_KEY_W))
+            {
+                freeflyCamera.moveFront(0.5);
+            }
+            if (ctx.key_is_pressed(GLFW_KEY_S))
+            {
+                freeflyCamera.moveFront(-0.5);
+            }
+            if (ctx.key_is_pressed(GLFW_KEY_A))
+            {
+                freeflyCamera.moveLeft(0.5);
+            }
+            if (ctx.key_is_pressed(GLFW_KEY_D))
+            {
+                freeflyCamera.moveLeft(-0.5);
+            }
+            if (ctx.key_is_pressed(GLFW_KEY_LEFT))
+            {
+                freeflyCamera.rotateLeft(50.f);
+            }
+            if (ctx.key_is_pressed(GLFW_KEY_RIGHT))
+            {
+                freeflyCamera.rotateLeft(-50.f);
+            }
+            if (ctx.key_is_pressed(GLFW_KEY_UP))
+            {
+                freeflyCamera.rotateUp(50.f);
+            }
+            if (ctx.key_is_pressed(GLFW_KEY_DOWN))
+            {
+                freeflyCamera.rotateUp(-50.f);
+            }
         }
 
-        // if (ctx.mouse_button_is_pressed(p6::Button::Left))
-        // {
-        //     if(button.position.x <0)
-        //     // on regarde où se situe la souris
-        //     double mouseX, mouseY;
-        //     glfwGetCursorPos(ctx.get_window(), &mouseX, &mouseY);
-        //     isMouseButtonDown = true;
-        //     // glfwGetCursorPos(ctx.get_window(), &lastMouseX, &lastMouseY);
-        // }
-        // // Détecter quand le bouton gauche de la souris est relâché
-        // if (!ctx.mouse_button_is_pressed(p6::Button::Left))
-        // {
-        //     isMouseButtonDown = false;
-        // }
+        ctx.mouse_pressed = [&](p6::MouseButton button) {
+            mousePressed = true;
 
-        // // Si le bouton gauche de la souris est enfoncé, mettre à jour la rotation de la caméra
-        // if (isMouseButtonDown)
-        // {
-        //     double mouseX, mouseY;
-        //     // glfwGetCursorPos(ctx.get_window(), &mouseX, &mouseY);
+            ctx.mouse_dragged = [&](p6::MouseDrag drag) {
+                freeflyCamera.rotateLeft(drag.delta.x * -5000.f);
+                freeflyCamera.rotateUp(drag.delta.y * 5000.f);
+            };
 
-        //     double deltaX = mouseX - lastMouseX;
-        //     double deltaY = mouseY - lastMouseY;
-
-        //     // Ajouter les deltas à la rotation de la caméra
-        //     freeflyCamera.rotateLeft(deltaX);
-        //     freeflyCamera.rotateUp(deltaY);
-
-        //     // Mettre à jour les dernières positions de la souris
-        //     lastMouseX = mouseX;
-        //     lastMouseY = mouseY;
-        // }
-        // else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-        // {
-        //     isMouseButtonDown = false;
-        //     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // Réafficher le curseur lorsque le clic est relâché
-        // }
+            ctx.mouse_released = [&](p6::MouseButton button) {
+                mousePressed       = false;
+                ctx.mouse_dragged  = nullptr;
+                ctx.mouse_released = nullptr;
+            };
+        };
 
         glClearColor(0.0f, 0.3f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -239,7 +234,7 @@ int main()
 
         glm::mat4 viewMatrix   = freeflyCamera.getViewMatrix();
         glm::mat3 TailleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(-0.25f, 0.f, -0.25f));
-        glm::mat4 ProjMatrix   = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
+        glm::mat4 ProjMatrix   = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 500.f);
         glm::mat4 MVMatrix     = viewMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, -5.f));
         glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
@@ -261,7 +256,7 @@ int main()
         }
 
         // Boucle pour les arbres
-        for (int i = 0; i < 10; ++i)
+        for (int i = 0; i < 100; ++i)
         {
             renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[0]);
         }
@@ -274,6 +269,28 @@ int main()
 
         // Pour être légèrement au dessus du personnage
         characterPosition.y -= characterPosition.y;
+
+        // Gestion collisions
+        for (int i = 0; i < boids_number; i++)
+        {
+            // Vérifier la collision avec chaque arbre
+            for (int j = 0; j < 100; ++j)
+            {
+                if (detectCollision(characterPosition, treeTranslation[j], 2, 2))
+                {
+                    collisionDetected = true;
+                    // Collision détectée, réagir en conséquence
+                    // Par exemple, ajuster la position du personnage ou appliquer des effets visuels
+                    // Ici, nous supposons simplement que la collision est détectée et imprimons un message
+                    std::cout << "Collision detected between character and tree " << j << "collisionDetected" << collisionDetected << std::endl;
+                }
+                else
+                {
+                    collisionDetected = false;
+                }
+            }
+        }
+
         renderObject(vaoCharacter, static_cast<GLsizei>(character.size()), characterPosition, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[4]);
 
         renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[5]);

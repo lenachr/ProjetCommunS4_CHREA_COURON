@@ -61,6 +61,8 @@ public:
     // A appeler pour tourter la caméra vers la gauche ou vers la droite
     void rotateLeft(float degrees)
     {
+        // m_Phi += glm::radians(degrees);
+        // computeDirectionVectors();
         m_Phi += glm::radians(degrees);
         computeDirectionVectors();
     }
@@ -68,7 +70,11 @@ public:
     // A appeler pour tourter la caméra vers le haut ou vers le bas
     void rotateUp(float degrees)
     {
+        // m_Theta += glm::radians(degrees);
+        // computeDirectionVectors();
         m_Theta += glm::radians(degrees);
+        // Limiter l'angle de rotation vertical entre -PI/2 et PI/2 pour éviter le renversement
+        m_Theta = glm::clamp(m_Theta, -50 * PI / 2.f, 50 * PI / 2.f);
         computeDirectionVectors();
     }
 

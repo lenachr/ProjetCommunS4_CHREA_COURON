@@ -35,5 +35,6 @@ void main() {
     // vTexCoords = aVertexTexCoords;
 
     // Calcul de la position projetée
+    // gl_Position = uMVPMatrix * vertexPosition;
     gl_Position = uMVPMatrix * vertexPosition;
 }

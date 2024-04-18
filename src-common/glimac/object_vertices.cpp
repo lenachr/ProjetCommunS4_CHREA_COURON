@@ -9,7 +9,7 @@
 
 namespace glimac {
 
-std::vector<ShapeVertex> tree_vertices(float size) // NOLINT(bugprone-easily-swappable-parameters, readability-inconsistent-declaration-parameter-name)
+std::vector<ShapeVertex> tree_vertices(float size)
 {
     // Vertices du rectangle
     std::vector<ShapeVertex> rectangle = cube_vertices(size, size * 4, size);
@@ -21,7 +21,7 @@ std::vector<ShapeVertex> tree_vertices(float size) // NOLINT(bugprone-easily-swa
     for (auto& vertex : sphere)
     {
         // vertex.position.x = -vertex.position.x;
-        vertex.position.y = -vertex.position.y;
+        // vertex.position.y = -vertex.position.y;
         vertex.position.z = -vertex.position.z;
         vertex.position.y += 9.5f * size; // décalage vertical pour placer la sphère au-dessus du rectangle
     }

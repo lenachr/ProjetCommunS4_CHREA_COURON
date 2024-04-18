@@ -69,12 +69,19 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat
     glUniformMatrix4fv(TreeProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
     glUniformMatrix4fv(TreeProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
+    // glUseProgram(TreeProgram.m_Program.id());
+    // glUniform3fv(TreeProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
+    // glUniform3f(TreeProgram.uLightIntensity, 100.0f, 100.0f, 100.0f); // Intensité de la lumière blanche
+    // glUniform3f(TreeProgram.uKd, 10.f, 10.f, 10.f);                   // Coefficients de réflexion diffuse
+    // glUniform3f(TreeProgram.uKs, 10.f, 10.f, 10.f);                   // Coefficients de réflexion spéculaire
+    // glUniform1f(TreeProgram.uShininess, 32.0f);                       // Exposant de brillance
+
     glUseProgram(TreeProgram.m_Program.id());
     glUniform3fv(TreeProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
-    glUniform3f(TreeProgram.uLightIntensity, 100.0f, 100.0f, 100.0f); // Intensité de la lumière blanche
-    glUniform3f(TreeProgram.uKd, 10.f, 10.f, 10.f);                   // Coefficients de réflexion diffuse
-    glUniform3f(TreeProgram.uKs, 10.f, 10.f, 10.f);                   // Coefficients de réflexion spéculaire
-    glUniform1f(TreeProgram.uShininess, 32.0f);                       // Exposant de brillance
+    glUniform3f(TreeProgram.uLightIntensity, 1.0f, 0.8f, 0.8f); // Intensité de la lumière blanche
+    glUniform3f(TreeProgram.uKd, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion diffuse
+    glUniform3f(TreeProgram.uKs, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion spéculaire
+    glUniform1f(TreeProgram.uShininess, 32.0f);                 // Exposant de brillance
 
     // Bind VAO and draw
     glBindVertexArray(vao);
