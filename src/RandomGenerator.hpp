@@ -1,4 +1,5 @@
 #pragma once
+#include <chrono>
 #include <glimac/common.hpp>
 #include "p6/p6.h"
 
@@ -10,7 +11,8 @@ bool   boidFall(double probability);
 // Loi binomiale de Bernoulli pour placer les arbres aléaoirement plus dans les angles avec plus de chances que ce soit en face à gauche
 float generateRandomPositionTree();
 // Loi exponentielle qui fait tomber des cerf-volants
-bool boidFalling();
+// bool boidFalling(auto start, auto now);
+bool boidFalling(float timeStart);
 // Fonction pour choisir aléatoirement une texture de boid, loi de distribution uniforme
 std::string chooseBoidTexture();
 // Choix de la couleur de la pierre selon une distribution normale

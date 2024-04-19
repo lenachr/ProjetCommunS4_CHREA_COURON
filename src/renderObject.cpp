@@ -54,7 +54,7 @@ void bindTexture(std::vector<GLuint> textureID, int i, img::Image& texture)
 }
 
 // Function to draw each object with translation
-void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, TreeProgram& TreeProgram)
+void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram)
 {
     // Calculate model matrix with translation
     glm::mat4 MVMatrix = viewMatrix * glm::translate(glm::mat4(1.0f), translation);
@@ -65,23 +65,23 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat
     lightPosition           = glm::vec3(viewMatrix * glm::vec4(lightPosition, 1.0f)); // Transformation de la position par la matrice de vue
 
     // Set shader uniforms
-    glUniformMatrix4fv(TreeProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-    glUniformMatrix4fv(TreeProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-    glUniformMatrix4fv(TreeProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+    glUniformMatrix4fv(ObjectProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+    glUniformMatrix4fv(ObjectProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+    glUniformMatrix4fv(ObjectProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
-    // glUseProgram(TreeProgram.m_Program.id());
-    // glUniform3fv(TreeProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
-    // glUniform3f(TreeProgram.uLightIntensity, 100.0f, 100.0f, 100.0f); // Intensité de la lumière blanche
-    // glUniform3f(TreeProgram.uKd, 10.f, 10.f, 10.f);                   // Coefficients de réflexion diffuse
-    // glUniform3f(TreeProgram.uKs, 10.f, 10.f, 10.f);                   // Coefficients de réflexion spéculaire
-    // glUniform1f(TreeProgram.uShininess, 32.0f);                       // Exposant de brillance
+    // glUseProgram(ObjectProgram.m_Program.id());
+    // glUniform3fv(ObjectProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
+    // glUniform3f(ObjectProgram.uLightIntensity, 100.0f, 100.0f, 100.0f); // Intensité de la lumière blanche
+    // glUniform3f(ObjectProgram.uKd, 10.f, 10.f, 10.f);                   // Coefficients de réflexion diffuse
+    // glUniform3f(ObjectProgram.uKs, 10.f, 10.f, 10.f);                   // Coefficients de réflexion spéculaire
+    // glUniform1f(ObjectProgram.uShininess, 32.0f);                       // Exposant de brillance
 
-    glUseProgram(TreeProgram.m_Program.id());
-    glUniform3fv(TreeProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
-    glUniform3f(TreeProgram.uLightIntensity, 1.0f, 0.8f, 0.8f); // Intensité de la lumière blanche
-    glUniform3f(TreeProgram.uKd, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion diffuse
-    glUniform3f(TreeProgram.uKs, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion spéculaire
-    glUniform1f(TreeProgram.uShininess, 32.0f);                 // Exposant de brillance
+    glUseProgram(ObjectProgram.m_Program.id());
+    glUniform3fv(ObjectProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
+    glUniform3f(ObjectProgram.uLightIntensity, 1.0f, 0.8f, 0.8f); // Intensité de la lumière blanche
+    glUniform3f(ObjectProgram.uKd, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion diffuse
+    glUniform3f(ObjectProgram.uKs, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion spéculaire
+    glUniform1f(ObjectProgram.uShininess, 32.0f);                 // Exposant de brillance
 
     // Bind VAO and draw
     glBindVertexArray(vao);
@@ -89,10 +89,10 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat
     glBindVertexArray(0);
 }
 
-void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, TreeProgram& TreeProgram, GLuint textureID)
+void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    drawObject(vao, vertexCount, translation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram);
+    drawObject(vao, vertexCount, translation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -1,11 +1,12 @@
 #pragma once
 #include <cmath>
 #include <glimac/object_vertices.hpp>
+#include "ObjectProgram.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 #include "p6/p6.h"
 #include "renderObject.hpp"
-#include "treeProgram.hpp"
+
 
 class Boid {
 public:
@@ -13,7 +14,7 @@ public:
         : position{position}, speed{speed}, falling(false)
     {}
 
-    void draw(p6::Context* ctx, GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, TreeProgram& TreeProgram, GLuint textureID);
+    void draw(p6::Context* ctx, GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID);
     void update(const std::vector<Boid>& allBoid, float alignement_coeff, float cohesion_coeff, float separation_coeff);
     ~Boid();
 

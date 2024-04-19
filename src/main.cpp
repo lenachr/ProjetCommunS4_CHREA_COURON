@@ -16,7 +16,7 @@
 #include "glm/gtx/transform.hpp"
 #include "p6/p6.h"
 #include "renderObject.hpp"
-#include "treeProgram.hpp"
+#include "ObjectProgram.hpp"
 
 // double lastMouseX        = 0.0;
 // double lastMouseY        = 0.0;
@@ -25,6 +25,8 @@ bool collisionDetectedUp    = false;
 bool collisionDetectedDown  = false;
 bool collisionDetectedLeft  = false;
 bool collisionDetectedRight = false;
+
+float timeStart = static_cast<int>(glfwGetTime() * 1000.0);
 
 // Fonction pour détecter la collision entre le personnage et un arbre
 bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treePosition, float characterRadius, float treeRadius)
@@ -37,12 +39,21 @@ bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treePo
 
 int main()
 {
+    // Initialisation de GLFW
+    if (!glfwInit())
+    {
+        std::cerr << "Erreur lors de l'initialisation de GLFW" << std::endl;
+        return -1;
+    }
+
     auto ctx = p6::Context{{1280, 720, "Test objects"}};
     ctx.maximize_window();
 
     /*********************************
      * HERE SHOULD COME THE INITIALIZATION CODE
      *********************************/
+    // le temps actuel
+
     // Initialisation du générateur de nombres aléatoires
     srand(static_cast<unsigned>(time(nullptr)));
 
@@ -77,13 +88,9 @@ int main()
             /*speed = */
             glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
         });
-        if (boidFalling())
-        {
-            boids[i].falling = true;
-        }
     }
 
-    TreeProgram TreeProgram{};
+    ObjectProgram ObjectProgram{};
 
     img::Image textureTree      = p6::load_image_buffer("assets/textures/tree.jpg");
     img::Image textureSky       = p6::load_image_buffer("assets/textures/sky.jpg");
@@ -187,14 +194,14 @@ int main()
         treeTranslation.push_back(glm::vec3(randXTree, 2.0f, randZTree));
     }
 
-    std::cout << "n : " << n << std::endl;
-    std::cout << "m : " << m << std::endl;
+    // std::cout << "n : " << n << std::endl;
+    // std::cout << "m : " << m << std::endl;
 
     const int numRocks = 10;
     for (int i = 0; i < numRocks; ++i)
     {
         std::string color = chooseRockColor();
-        std::cout << "Rocher " << i + 1 << " : Couleur -> " << color << std::endl;
+        // std::cout << "Rocher " << i + 1 << " : Couleur -> " << color << std::endl;
     }
 
     constexpr float characterDistance = 12.0f;
@@ -207,6 +214,7 @@ int main()
         // Interactions clavier
         // if (!collisionDetected)
         // {
+
         bool upPressed    = false;
         bool downPressed  = false;
         bool leftPressed  = false;
@@ -307,7 +315,7 @@ int main()
 
         glClearColor(0.0f, 0.3f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        TreeProgram.m_Program.use();
+        ObjectProgram.m_Program.use();
 
         // Gestion des boids
         // Show a simple window
@@ -330,35 +338,39 @@ int main()
         MVMatrix = glm::rotate(MVMatrix, -1.57f, {0.f, 1.f, 0.f});
 
         // glUniform1f(uAlphaLocation, transparency);
-        glUniformMatrix4fv(TreeProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-        glUniformMatrix4fv(TreeProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-        glUniformMatrix4fv(TreeProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+        glUniformMatrix4fv(ObjectProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+        glUniformMatrix4fv(ObjectProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+        glUniformMatrix4fv(ObjectProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
         // boucle qui affiche les boids
         for (int i = 0; i < boids_number; i++)
         {
             if (textures[i] == "Texture 1")
             {
-                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[9]);
+                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
             }
             else
             {
-                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[10]);
+                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+            }
+            if (boidFalling(timeStart))
+            {
+                boids[i].falling = true;
             }
 
-            // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[2]);
+            // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
             boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
         }
 
         // Boucle pour les arbres
         for (int i = 0; i < trees_number; ++i)
         {
-            renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[0]);
+            renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
         }
 
-        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[1]);
+        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
 
-        renderObject(vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[3]);
+        renderObject(vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]);
 
         // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
         glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
@@ -379,7 +391,7 @@ int main()
                         // characterPosition = freeflyCamera.getPosition() - 2.f + characterDistance * freeflyCamera.getFrontVector();
                         // characterPosition.y -= characterPosition.y;
                         collisionDetectedUp = true;
-                        std::cout << "collision detected up" << std::endl;
+                        // std::cout << "collision detected up" << std::endl;
                         if (ctx.key_is_pressed(GLFW_KEY_W))
                         {
                             return;
@@ -398,7 +410,7 @@ int main()
                         {
                             return;
                         }
-                        std::cout << "collision detected down" << std::endl;
+                        // std::cout << "collision detected down" << std::endl;
                     }
                     else
                     {
@@ -413,7 +425,7 @@ int main()
                         {
                             return;
                         }
-                        std::cout << "collision detected left" << std::endl;
+                        // std::cout << "collision detected left" << std::endl;
                     }
                     else
                     {
@@ -428,7 +440,7 @@ int main()
                         {
                             return;
                         }
-                        std::cout << "collision detected right" << std::endl;
+                        // std::cout << "collision detected right" << std::endl;
                     }
                     else
                     {
@@ -443,17 +455,17 @@ int main()
                     collisionDetectedLeft  = false;
                     collisionDetectedRight = false;
                 }
-                std::cout << collisionDetectedUp << std::endl;
+                // std::cout << collisionDetectedUp << std::endl;
             }
         }
 
-        renderObject(vaoCharacter, static_cast<GLsizei>(character.size()), characterPosition, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[4]);
+        renderObject(vaoCharacter, static_cast<GLsizei>(character.size()), characterPosition, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[4]);
 
-        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[5]);
+        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5]);
 
-        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[2]);
+        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
 
-        // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[9]);
+        // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
 
         glBindVertexArray(0);
     };

@@ -71,35 +71,50 @@ double timeBetweenFalls(double lambda)
     static std::random_device              rd;
     static std::mt19937                    gen(rd());
     static std::exponential_distribution<> dis(lambda);
+    // std::cout << "rnd : " << dis(gen) << std::endl;
     return dis(gen);
 }
 
 // Loi exponentielle qui fait tomber des cerf-volants
-bool boidFalling()
+bool boidFalling(float timeStart)
 {
     const double probabilityOfFalling = 0.2; // Probabilité de chute d'un boid
-    const double lambda               = 1.0; // Paramètre lambda de la loi exponentielle pour le temps entre chaque chute
-    const int    X                    = 5;   // Intervalle de temps entre chaque chute (en secondes)
+    const double lambda               = 0.1; // Paramètre lambda de la loi exponentielle pour le temps entre chaque chute
+    const int    X                    = 15;  // Intervalle de temps entre chaque chute (en secondes)
     const int    simulationTime       = 60;  // Durée de simulation (en secondes)
-    int          timeElapsed          = 0;   // Temps écoulé
 
-    while (timeElapsed < simulationTime)
+    // connaitre le temps écoulé depuis le début de la simulation
+
+    // int timeStart = glutGet(GLUT_ELAPSED_TIME);
+    // int timeNow   = glutGet(GLUT_ELAPSED_TIME);
+    // int elapsed   = timeNow - timeStart;
+
+    // int timeElapsed = 0; // Temps écoulé
+    float timeNow     = static_cast<int>(glfwGetTime() * 1000.0); // Assuming GLUT_ELAPSED_TIME is defined in GLUT library
+    float timeElapsed = (timeNow - timeStart) / 10000.0f;
+    // auto start       = std::chrono::high_resolution_clock::now();
+    // auto now         = std::chrono::high_resolution_clock::now();
+    // auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+    // std::cout << "now : " << now << std::endl;
+    // while (timeElapsed < simulationTime)
+    // {
+    double timeUntilNextFall = timeBetweenFalls(lambda) * 1000;
+    // timeElapsed              = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
+    // timeElapsed += X; // Avance dans le temps de X secondes
+
+    // Vérifie si un boid tombe à ce moment-là
+    std::cout << "timeUntilNextFall : " << timeUntilNextFall << " & elps time" << timeElapsed << " & now : " << timeNow << std::endl;
+    if (timeUntilNextFall <= X && boidFall(probabilityOfFalling) && timeUntilNextFall > timeElapsed)
     {
-        double timeUntilNextFall = timeBetweenFalls(lambda);
-        timeElapsed += X; // Avance dans le temps de X secondes
-
-        // Vérifie si un boid tombe à ce moment-là
-        if (timeUntilNextFall <= X && boidFall(probabilityOfFalling))
-        {
-            return true;
-            // std::cout << "Un boid est tombé au sol à " << timeElapsed << " secondes." << std::endl;
-        }
-        else
-        {
-            return false;
-            // std::cout << "Aucun boid n'est tombé au sol à " << timeElapsed << " secondes." << std::endl;
-        }
+        std::cout << "Un boid est tombé au sol à " << timeElapsed << " secondes." << std::endl;
+        return true;
     }
+    else
+    {
+        return false;
+        // std::cout << "Aucun boid n'est tombé au sol à " << timeElapsed << " secondes." << std::endl;
+    }
+    // }
 }
 
 // Fonction pour choisir aléatoirement une texture de boid, loi de distribution uniforme
