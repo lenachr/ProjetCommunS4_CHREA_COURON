@@ -41,7 +41,7 @@ void main()
 
     vec3 color = blinnPhong(vNormal_vs, vPosition_vs, uLightIntensity, uShininess, uKd, uKs); 
     // fFragColor= vec4 (color, 1.0f);
-    fFragColor = vec4(mix(texture.rgb, color, 0.8f), texture.a);
+    fFragColor = vec4(mix(texture.rgb, color, 0.6f), texture.a);
 
     // fFragColor = vec4(0.1f, 1.0f, 0.5f, 0.5f);
 }

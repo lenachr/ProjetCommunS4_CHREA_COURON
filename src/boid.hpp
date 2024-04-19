@@ -10,7 +10,7 @@
 class Boid {
 public:
     Boid(glm::vec3 position, glm::vec3 speed)
-        : position{position}, speed{speed}
+        : position{position}, speed{speed}, falling(false)
     {}
 
     void draw(p6::Context* ctx, GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, TreeProgram& TreeProgram, GLuint textureID);
@@ -27,4 +27,7 @@ private:
 private:
     glm::vec3 position;
     glm::vec3 speed;
+
+public:
+    bool falling;
 };

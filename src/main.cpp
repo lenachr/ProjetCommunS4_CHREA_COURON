@@ -20,8 +20,11 @@
 
 // double lastMouseX        = 0.0;
 // double lastMouseY        = 0.0;
-bool mousePressed      = false;
-bool collisionDetected = false;
+bool mousePressed           = false;
+bool collisionDetectedUp    = false;
+bool collisionDetectedDown  = false;
+bool collisionDetectedLeft  = false;
+bool collisionDetectedRight = false;
 
 // Fonction pour détecter la collision entre le personnage et un arbre
 bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treePosition, float characterRadius, float treeRadius)
@@ -43,6 +46,9 @@ int main()
     // Initialisation du générateur de nombres aléatoires
     srand(static_cast<unsigned>(time(nullptr)));
 
+    // Nombre d'arbres
+    int trees_number = 50;
+
     // Initilaisation des boids
     std::cout << "1\n";
     // Run the tests
@@ -55,6 +61,14 @@ int main()
     float             alignement_coeff = 0.1f;
     float             cohesion_coeff   = 0.1f;
     float             separation_coeff = 0.01f;
+
+    std::string textures[50]; // Déclaration du tableau de textures
+
+    // Remplissage du tableau avec les sorties de chooseBoidTexture()
+    for (int i = 0; i < 50; ++i)
+    {
+        textures[i] = chooseBoidTexture();
+    }
     // Ajout dans le vector des position aléatoire pour les boids
     for (int i = 0; i < 50; i++)
     {
@@ -63,6 +77,10 @@ int main()
             /*speed = */
             glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
         });
+        if (boidFalling())
+        {
+            boids[i].falling = true;
+        }
     }
 
     TreeProgram TreeProgram{};
@@ -76,7 +94,8 @@ int main()
     img::Image textureDress     = p6::load_image_buffer("assets/textures/dress.jpg");
     img::Image textureHead      = p6::load_image_buffer("assets/textures/tete.jpg");
     img::Image textureLegs      = p6::load_image_buffer("assets/textures/jambes.jpg");
-    img::Image textureBoid      = p6::load_image_buffer("assets/textures/boid.jpg");
+    img::Image textureBoid01    = p6::load_image_buffer("assets/textures/boid.jpg");
+    img::Image textureBoid02    = p6::load_image_buffer("assets/textures/boid1.png");
 
     std::vector<GLuint> textureID(50);
     // std::vector<GLuint> textureID;
@@ -93,7 +112,8 @@ int main()
     bindTexture(textureID, 6, textureDress);
     bindTexture(textureID, 7, textureHead);
     bindTexture(textureID, 8, textureLegs);
-    bindTexture(textureID, 9, textureBoid);
+    bindTexture(textureID, 9, textureBoid01);
+    bindTexture(textureID, 10, textureBoid02);
 
     // Initialisation caméra
     FreeflyCamera freeflyCamera;
@@ -143,19 +163,38 @@ int main()
     glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
     glm::vec3 houseTranslation(0.0f, 0.0f, 10.0f);
 
-    // const float minXTree = -40.0f;
-    // const float maxXTree = 40.0f;
-    // const float minZTree = -40.0f;
-    // const float maxZTree = 40.0f;
-
     std::vector<glm::vec3> treeTranslation;
-    for (int i = 0; i < 100; i++)
+    int                    n = 0;
+    int                    m = 0;
+    for (int i = 0; i < trees_number; i++)
     {
+        // std::srand(static_cast<unsigned int>(std::time(nullptr)));
         float randXTree = generateRandomPositionTree();
+        // float randXTree = randPoisson(2.f);
 
         float randZTree = generateRandomPositionTree();
+        // float randZTree = randPoisson(2.f);
+
+        // if (randXTree < 0)
+        // {
+        //     n += 1;
+        // }
+        // if (randXTree > 0)
+        // {
+        //     m += 1;
+        // }
 
         treeTranslation.push_back(glm::vec3(randXTree, 2.0f, randZTree));
+    }
+
+    std::cout << "n : " << n << std::endl;
+    std::cout << "m : " << m << std::endl;
+
+    const int numRocks = 10;
+    for (int i = 0; i < numRocks; ++i)
+    {
+        std::string color = chooseRockColor();
+        std::cout << "Rocher " << i + 1 << " : Couleur -> " << color << std::endl;
     }
 
     constexpr float characterDistance = 12.0f;
@@ -166,41 +205,90 @@ int main()
          * HERE SHOULD COME THE RENDERING CODE
          *********************************/
         // Interactions clavier
-        if (!collisionDetected)
+        // if (!collisionDetected)
+        // {
+        bool upPressed    = false;
+        bool downPressed  = false;
+        bool leftPressed  = false;
+        bool rightPressed = false;
+        if (ctx.key_is_pressed(GLFW_KEY_W))
         {
-            if (ctx.key_is_pressed(GLFW_KEY_W))
+            if (collisionDetectedUp)
+            {
+                return;
+            }
+            if (!collisionDetectedUp)
             {
                 freeflyCamera.moveFront(0.5);
-            }
-            if (ctx.key_is_pressed(GLFW_KEY_S))
-            {
-                freeflyCamera.moveFront(-0.5);
-            }
-            if (ctx.key_is_pressed(GLFW_KEY_A))
-            {
-                freeflyCamera.moveLeft(0.5);
-            }
-            if (ctx.key_is_pressed(GLFW_KEY_D))
-            {
-                freeflyCamera.moveLeft(-0.5);
-            }
-            if (ctx.key_is_pressed(GLFW_KEY_LEFT))
-            {
-                freeflyCamera.rotateLeft(50.f);
-            }
-            if (ctx.key_is_pressed(GLFW_KEY_RIGHT))
-            {
-                freeflyCamera.rotateLeft(-50.f);
-            }
-            if (ctx.key_is_pressed(GLFW_KEY_UP))
-            {
-                freeflyCamera.rotateUp(50.f);
-            }
-            if (ctx.key_is_pressed(GLFW_KEY_DOWN))
-            {
-                freeflyCamera.rotateUp(-50.f);
+                upPressed = true;
             }
         }
+        else
+        {
+            upPressed = false;
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_S))
+        {
+            if (collisionDetectedDown)
+            {
+                return;
+            }
+            freeflyCamera.moveFront(-0.5);
+            downPressed = true;
+        }
+        else
+        {
+            downPressed = false;
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_A))
+        {
+            if (collisionDetectedLeft)
+            {
+                return;
+            }
+            // if (!collisionDetectedLeft)
+            // {
+            freeflyCamera.moveLeft(0.5);
+            leftPressed = true;
+            // }
+        }
+        else
+        {
+            leftPressed = false;
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_D))
+        {
+            if (collisionDetectedRight)
+            {
+                return;
+            }
+            if (!collisionDetectedRight)
+            {
+                freeflyCamera.moveLeft(-0.5);
+                rightPressed = true;
+            }
+        }
+        else
+        {
+            rightPressed = false;
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_LEFT))
+        {
+            freeflyCamera.rotateLeft(50.f);
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_RIGHT))
+        {
+            freeflyCamera.rotateLeft(-50.f);
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_UP))
+        {
+            freeflyCamera.rotateUp(50.f);
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_DOWN))
+        {
+            freeflyCamera.rotateUp(-50.f);
+        }
+        // }
 
         ctx.mouse_pressed = [&](p6::MouseButton button) {
             mousePressed = true;
@@ -249,14 +337,21 @@ int main()
         // boucle qui affiche les boids
         for (int i = 0; i < boids_number; i++)
         {
-            boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[9]);
+            if (textures[i] == "Texture 1")
+            {
+                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[9]);
+            }
+            else
+            {
+                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[10]);
+            }
 
             // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[2]);
             boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
         }
 
         // Boucle pour les arbres
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < trees_number; ++i)
         {
             renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[0]);
         }
@@ -265,6 +360,7 @@ int main()
 
         renderObject(vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation, viewMatrix, ProjMatrix, NormalMatrix, TreeProgram, textureID[3]);
 
+        // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
         glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
 
         // Pour être légèrement au dessus du personnage
@@ -274,20 +370,80 @@ int main()
         for (int i = 0; i < boids_number; i++)
         {
             // Vérifier la collision avec chaque arbre
-            for (int j = 0; j < 100; ++j)
+            for (int j = 0; j < trees_number; ++j)
             {
                 if (detectCollision(characterPosition, treeTranslation[j], 2, 2))
                 {
-                    collisionDetected = true;
-                    // Collision détectée, réagir en conséquence
-                    // Par exemple, ajuster la position du personnage ou appliquer des effets visuels
-                    // Ici, nous supposons simplement que la collision est détectée et imprimons un message
-                    std::cout << "Collision detected between character and tree " << j << "collisionDetected" << collisionDetected << std::endl;
+                    if (upPressed)
+                    {
+                        // characterPosition = freeflyCamera.getPosition() - 2.f + characterDistance * freeflyCamera.getFrontVector();
+                        // characterPosition.y -= characterPosition.y;
+                        collisionDetectedUp = true;
+                        std::cout << "collision detected up" << std::endl;
+                        if (ctx.key_is_pressed(GLFW_KEY_W))
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        collisionDetectedUp = false;
+                    }
+                    if (downPressed)
+                    {
+                        // characterPosition = freeflyCamera.getPosition() + 2.f + characterDistance * freeflyCamera.getFrontVector();
+                        // characterPosition.y -= characterPosition.y;
+                        collisionDetectedDown = true;
+                        if (ctx.key_is_pressed(GLFW_KEY_S))
+                        {
+                            return;
+                        }
+                        std::cout << "collision detected down" << std::endl;
+                    }
+                    else
+                    {
+                        collisionDetectedDown = false;
+                    }
+                    if (leftPressed)
+                    {
+                        // characterPosition = freeflyCamera.getPosition() - 2.f + characterDistance * freeflyCamera.getFrontVector();
+                        // characterPosition.y -= characterPosition.y;
+                        collisionDetectedLeft = true;
+                        if (ctx.key_is_pressed(GLFW_KEY_A))
+                        {
+                            return;
+                        }
+                        std::cout << "collision detected left" << std::endl;
+                    }
+                    else
+                    {
+                        collisionDetectedLeft = false;
+                    }
+                    if (rightPressed)
+                    {
+                        // characterPosition = freeflyCamera.getPosition() + 2.f + characterDistance * freeflyCamera.getFrontVector();
+                        // characterPosition.y -= characterPosition.y;
+                        collisionDetectedRight = true;
+                        if (ctx.key_is_pressed(GLFW_KEY_D))
+                        {
+                            return;
+                        }
+                        std::cout << "collision detected right" << std::endl;
+                    }
+                    else
+                    {
+                        collisionDetectedRight = false;
+                    }
                 }
                 else
                 {
-                    collisionDetected = false;
+                    // collisionDetected = false;
+                    collisionDetectedUp    = false;
+                    collisionDetectedDown  = false;
+                    collisionDetectedLeft  = false;
+                    collisionDetectedRight = false;
                 }
+                std::cout << collisionDetectedUp << std::endl;
             }
         }
 

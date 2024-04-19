@@ -16,28 +16,35 @@ Boid::~Boid()
 // Methode qui gère les mouvements
 void Boid::apply_speed()
 {
-    position.x += speed.x;
-    position.y += speed.y;
+    if (falling == true)
+    {
+        position.y -= 1.f;
+    }
+    else
+    {
+        position.x += speed.x;
+        position.z += speed.z;
 
-    // // Si contact mur haut
-    if (position.y > -50.0f) // 0.75f
-    {
-        position.y = 50.0f;
-    }
-    // // Si contact mur bas
-    if (position.y < -50.0f) //-1.1f
-    {
-        position.y = 50.0f;
-    }
-    // // Si contact mur gauche
-    if (position.x < -50.0f) //-1.1f
-    {
-        position.x = 50.0f;
-    }
-    // // Si contact mur droit
-    if (position.x > 50.0f) // 0.75f
-    {
-        position.x = -50.0f;
+        // // Si contact mur haut
+        if (position.z > -50.0f) // 0.75f
+        {
+            position.z = 50.0f;
+        }
+        // // Si contact mur bas
+        if (position.z < -50.0f) //-1.1f
+        {
+            position.z = 50.0f;
+        }
+        // // Si contact mur gauche
+        if (position.x < -50.0f) //-1.1f
+        {
+            position.x = 50.0f;
+        }
+        // // Si contact mur droit
+        if (position.x > 50.0f) // 0.75f
+        {
+            position.x = -50.0f;
+        }
     }
 }
 
@@ -122,13 +129,13 @@ void Boid::separation(const std::vector<Boid>& allBoids, float separationDistanc
                 // Calculer le vecteur différence entre les positions
                 glm::vec3 diff;
                 diff.x = position.x - otherBoid.position.x;
-                diff.y = position.y - otherBoid.position.y;
+                diff.z = position.z - otherBoid.position.z;
                 diff.x /= dist;
-                diff.y /= dist;
+                diff.z /= dist;
 
                 // Ajouter le vecteur différence au vecteur de direction de l'évitement
                 separation.x += diff.x;
-                separation.y += diff.y;
+                separation.z += diff.z;
                 neighborCount++;
             }
         }
@@ -139,7 +146,7 @@ void Boid::separation(const std::vector<Boid>& allBoids, float separationDistanc
     {
         // Ajuster la position du boid pour se déplacer dans la direction opposée à celle des voisins proches
         this->position.x += separationFactor * separation.x;
-        this->position.y += separationFactor * separation.y;
+        this->position.z += separationFactor * separation.z;
     }
 }
 
