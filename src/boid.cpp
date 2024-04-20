@@ -23,34 +23,72 @@ void Boid::apply_speed()
     else
     {
         position.x += speed.x;
+        position.y += speed.y;
         position.z += speed.z;
 
-        // // Si contact mur haut
-        if (position.z > -50.0f) // 0.75f
+        // Si contact mur haut
+        if (position.y < -40.f) //-1.1f
         {
-            position.z = 50.0f;
+            speed.y = -speed.y;
+            // position.y = 25.0f;
         }
-        // // Si contact mur bas
-        if (position.z < -50.0f) //-1.1f
+        // Si contact mur bas
+        if (position.y < 30.0f) // 0.75f
         {
-            position.z = 50.0f;
+            // speed.x = 0;
+            // speed.y = 0;
+            // speed.z = 0;
+            speed.y = -speed.y;
+            // position.y = -40.0f;
         }
-        // // Si contact mur gauche
-        if (position.x < -50.0f) //-1.1f
+
+        // Si contact mur gauche
+        if (position.x < -45.f)
         {
-            position.x = 50.0f;
+            // speed.x = 0;
+            // speed.y = 0;
+            // speed.z = 0;
+            // position.x = 40.f;
+            speed.x = -speed.x;
+            // position.z = 45.f;
         }
-        // // Si contact mur droit
-        if (position.x > 50.0f) // 0.75f
+
+        // Si contact mur droit
+        if (position.x > 45.f)
         {
-            position.x = -50.0f;
+            // speed.x    = 0;
+            // speed.y    = 0;
+            // speed.z    = 0;
+            // position.x = -40.0f;
+            // position.z = -45.0f;
+            speed.x = -speed.x;
+        }
+
+        if (position.z < -90.f) //-1.1f
+        {
+            // speed.x    = 0;
+            // speed.y    = 0;
+            // speed.z    = 0;
+            // position.z = 40.f;
+            // position.z = 45.f;
+            speed.z = -speed.z;
+        }
+        // Si contact mur droit
+        if (position.z > 90.f) // 0.75f
+        {
+            // speed.x    = 0;
+            // speed.y    = 0;
+            // speed.z    = 0;
+            // position.z = -40.0f;
+            // position.z = -45.0f;
+            speed.z = -speed.z;
         }
     }
 }
 
 float Boid::distance(const Boid& boid1, const Boid& boid2)
 {
-    return std::sqrt((boid2.position.x - boid1.position.x) * (boid2.position.x - boid1.position.x) + (boid2.position.y - boid1.position.y) * (boid2.position.y - boid1.position.y));
+    return std::sqrt((boid2.position.x - boid1.position.x) * (boid2.position.x - boid1.position.x) + (boid2.position.y - boid1.position.y) * (boid2.position.y - boid1.position.y) + (boid2.position.z - boid1.position.z) * (boid2.position.z - boid1.position.z));
 }
 
 void Boid::alignement(const std::vector<Boid>& allBoids, double alignmentDistance)

@@ -9,14 +9,15 @@
 #include <vector>
 #include "boid.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
+#include "ObjectProgram.hpp"
 #include "RandomGenerator.hpp"
 #include "doctest/doctest.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/transform.hpp"
+#include "model.hpp"
 #include "p6/p6.h"
 #include "renderObject.hpp"
-#include "ObjectProgram.hpp"
 
 // double lastMouseX        = 0.0;
 // double lastMouseY        = 0.0;
@@ -60,7 +61,7 @@ int main()
     // Nombre d'arbres
     int trees_number = 50;
 
-    // Initilaisation des boids
+    // Initialisation des boids
     std::cout << "1\n";
     // Run the tests
     if (doctest::Context{}.run() != 0)
@@ -84,9 +85,8 @@ int main()
     for (int i = 0; i < 50; i++)
     {
         boids.push_back(Boid{
-            /*position = */ glm::vec3{p6::random::number(-50.f, 50.0f), p6::random::number(70.f, 100.f), p6::random::number(-50.f, 50.0f)},
-            /*speed = */
-            glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+            /*position = */ glm::vec3{p6::random::number(-100.f, 100.0f), p6::random::number(70.f, 100.f), p6::random::number(-100.f, 100.0f)},
+            /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
         });
     }
 
