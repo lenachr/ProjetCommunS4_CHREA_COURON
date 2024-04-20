@@ -103,7 +103,7 @@ bool boidFalling(float timeStart)
     // timeElapsed += X; // Avance dans le temps de X secondes
 
     // Vérifie si un boid tombe à ce moment-là
-    std::cout << "timeUntilNextFall : " << timeUntilNextFall << " & elps time" << timeElapsed << " & now : " << timeNow << std::endl;
+    // std::cout << "timeUntilNextFall : " << timeUntilNextFall << " & elps time" << timeElapsed << " & now : " << timeNow << std::endl;
     if (timeUntilNextFall <= X && boidFall(probabilityOfFalling) && timeUntilNextFall > timeElapsed)
     {
         std::cout << "Un boid est tombé au sol à " << timeElapsed << " secondes." << std::endl;

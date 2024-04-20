@@ -27,9 +27,10 @@ void Boid::apply_speed()
         position.z += speed.z;
 
         // Si contact mur haut
-        if (position.y < -40.f) //-1.1f
+        if (position.y > 60.f) //-1.1f
         {
             speed.y = -speed.y;
+
             // position.y = 25.0f;
         }
         // Si contact mur bas
