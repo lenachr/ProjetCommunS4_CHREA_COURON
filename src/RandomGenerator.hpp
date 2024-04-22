@@ -4,6 +4,8 @@
 #include "p6/p6.h"
 
 double randomProbability();
+float  variance();
+float  esperance();
 float  randPoisson(float alpha);
 double timeBetweenFalls(double lambda);
 bool   boidFall(double probability);
@@ -16,4 +18,8 @@ bool boidFalling(float timeStart);
 // Fonction pour choisir aléatoirement une texture de boid, loi de distribution uniforme
 std::string chooseBoidTexture();
 // Choix de la couleur de la pierre selon une distribution normale
-std::string chooseRockColor();
+double chooseRockColor();
+// Fonction pour choisir la vitesse verticale aléatoire du boud avec une distribution de Laplace
+double chooseVerticalBoidSpeed();
+// Fonction pour placer les maisons sur la carte, loi de distribution bimodale
+double placeHouses();

@@ -6,6 +6,7 @@
 #include <glimac/default_shader.hpp>
 #include <glimac/object_vertices.hpp>
 #include <glimac/sphere_vertices.hpp>
+#include <iostream>
 #include <vector>
 #include "boid.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
@@ -82,13 +83,30 @@ int main()
         textures[i] = chooseBoidTexture();
     }
     // Ajout dans le vector des position aléatoire pour les boids
+    float bas  = 0.0f;
+    float haut = 0.0f;
     for (int i = 0; i < 50; i++)
     {
+        double verticalSpeed = chooseVerticalBoidSpeed();
+        if (verticalSpeed < 0)
+        {
+            bas++;
+        }
+        else
+        {
+            haut++;
+        }
         boids.push_back(Boid{
             /*position = */ glm::vec3{p6::random::number(-100.f, 100.0f), p6::random::number(70.f, 100.f), p6::random::number(-100.f, 100.0f)},
-            /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+            // /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f)),
+            /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f), verticalSpeed),
         });
     }
+    // Print des statistiques direction verticale
+    // std::cout << "Bas : " << bas / 50 * 100 << "%"
+    //   << "\n";
+    // std::cout << "Haut : " << haut / 50 * 100 << "%"
+    //   << "\n";
 
     ObjectProgram ObjectProgram{};
 
@@ -168,42 +186,48 @@ int main()
     glm::vec3 benchTranslation(10.0f, 0.0f, -5.0f);
     glm::vec3 boidTranslation(30.0f, 15.0f, 0.0f);
     glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
-    glm::vec3 houseTranslation(0.0f, 0.0f, 10.0f);
+
+    const int              nbHouses = 10; // Nombre de maisons à placer
+    float                  a        = 0.0f;
+    float                  b        = 0.0f;
+    std::vector<glm::vec3> houseTranslation;
+    for (int i = 0; i < nbHouses; i++)
+    {
+        double houseTranslationX = placeHouses();
+        double houseTranslationZ = placeHouses();
+        if (houseTranslationX < 0.0f && houseTranslationX > -20.0f && houseTranslationZ < 0.0f && houseTranslationZ > -20.0f)
+        {
+            a++;
+        }
+        else
+        {
+            b++;
+        }
+
+        std::cout << "Maison " << i + 1 << " : Position -> " << houseTranslationX << ", " << houseTranslationZ << std::endl;
+        houseTranslation.push_back(glm::vec3(houseTranslationX, 0.0f, houseTranslationZ));
+    }
+
+    std::cout << "Pourcentage de maison au centre : " << a / 1000 * 100 << std::endl;
+    std::cout << "Pourcentage de maison aux bords : " << b / 1000 * 100 << std::endl;
 
     std::vector<glm::vec3> treeTranslation;
-    int                    n = 0;
-    int                    m = 0;
+
     for (int i = 0; i < trees_number; i++)
     {
-        // std::srand(static_cast<unsigned int>(std::time(nullptr)));
         float randXTree = generateRandomPositionTree();
-        // float randXTree = randPoisson(2.f);
 
         float randZTree = generateRandomPositionTree();
-        // float randZTree = randPoisson(2.f);
-
-        // if (randXTree < 0)
-        // {
-        //     n += 1;
-        // }
-        // if (randXTree > 0)
-        // {
-        //     m += 1;
-        // }
 
         treeTranslation.push_back(glm::vec3(randXTree, 2.0f, randZTree));
     }
 
-    // std::cout << "n : " << n << std::endl;
-    // std::cout << "m : " << m << std::endl;
-
     const int numRocks = 10;
     for (int i = 0; i < numRocks; ++i)
     {
-        std::string color = chooseRockColor();
+        double color = chooseRockColor();
         // std::cout << "Rocher " << i + 1 << " : Couleur -> " << color << std::endl;
     }
-
     constexpr float characterDistance = 12.0f;
 
     // Declare your infinite update loop.
@@ -211,14 +235,12 @@ int main()
         /*********************************
          * HERE SHOULD COME THE RENDERING CODE
          *********************************/
-        // Interactions clavier
-        // if (!collisionDetected)
-        // {
-
+        // Interactions clavier/souris
         bool upPressed    = false;
         bool downPressed  = false;
         bool leftPressed  = false;
         bool rightPressed = false;
+
         if (ctx.key_is_pressed(GLFW_KEY_W))
         {
             if (collisionDetectedUp)
@@ -254,8 +276,6 @@ int main()
             {
                 return;
             }
-            // if (!collisionDetectedLeft)
-            // {
             freeflyCamera.moveLeft(0.5);
             leftPressed = true;
             // }
@@ -334,7 +354,6 @@ int main()
         glm::mat4 MVMatrix     = viewMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, -5.f));
         glm::mat4 NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
 
-        // MVMatrix               = glm::rotate(MVMatrix, ctx.time(), {1.f, 1.f, 1.f});
         MVMatrix = glm::rotate(MVMatrix, -1.57f, {0.f, 1.f, 0.f});
 
         // glUniform1f(uAlphaLocation, transparency);
@@ -343,21 +362,34 @@ int main()
         glUniformMatrix4fv(ObjectProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
         // boucle qui affiche les boids
+        float n = 0.f;
+        float m = 0.f;
         for (int i = 0; i < boids_number; i++)
         {
             if (textures[i] == "Texture 1")
             {
                 boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                n += 1;
             }
             else
             {
                 boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                m += 1;
             }
             if (boidFalling(timeStart))
             {
                 boids[i].falling = true;
+                if (boid[i].position.y <= 0.f)
+                {
+                    // Supprimer ce boid
+                    // boids.erase(boids.begin() + i);
+                    // boids_number--;
+                    // i--;
+                }
             }
 
+            // std::cout << "Boid avec texture 1 : " << n << " Soit : " << n / 50.0f * 100 << "%" << std::endl;
+            // std::cout << "Boid avec texture 2 : " << m << " Soit : " << m / 50.0f * 100 << "%" << std::endl;
             // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
             boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
         }
@@ -370,7 +402,14 @@ int main()
 
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
 
-        renderObject(vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]);
+        // std::cout << "Placements des maisons sur la carte : " << std::endl;
+        for (int i = 0; i < nbHouses; ++i)
+        {
+            renderObject(
+                vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+            );
+            // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
+        }
 
         // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
         glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
@@ -388,10 +427,7 @@ int main()
                 {
                     if (upPressed)
                     {
-                        // characterPosition = freeflyCamera.getPosition() - 2.f + characterDistance * freeflyCamera.getFrontVector();
-                        // characterPosition.y -= characterPosition.y;
                         collisionDetectedUp = true;
-                        // std::cout << "collision detected up" << std::endl;
                         if (ctx.key_is_pressed(GLFW_KEY_W))
                         {
                             return;
@@ -403,14 +439,11 @@ int main()
                     }
                     if (downPressed)
                     {
-                        // characterPosition = freeflyCamera.getPosition() + 2.f + characterDistance * freeflyCamera.getFrontVector();
-                        // characterPosition.y -= characterPosition.y;
                         collisionDetectedDown = true;
                         if (ctx.key_is_pressed(GLFW_KEY_S))
                         {
                             return;
                         }
-                        // std::cout << "collision detected down" << std::endl;
                     }
                     else
                     {
@@ -418,14 +451,11 @@ int main()
                     }
                     if (leftPressed)
                     {
-                        // characterPosition = freeflyCamera.getPosition() - 2.f + characterDistance * freeflyCamera.getFrontVector();
-                        // characterPosition.y -= characterPosition.y;
                         collisionDetectedLeft = true;
                         if (ctx.key_is_pressed(GLFW_KEY_A))
                         {
                             return;
                         }
-                        // std::cout << "collision detected left" << std::endl;
                     }
                     else
                     {
@@ -433,14 +463,11 @@ int main()
                     }
                     if (rightPressed)
                     {
-                        // characterPosition = freeflyCamera.getPosition() + 2.f + characterDistance * freeflyCamera.getFrontVector();
-                        // characterPosition.y -= characterPosition.y;
                         collisionDetectedRight = true;
                         if (ctx.key_is_pressed(GLFW_KEY_D))
                         {
                             return;
                         }
-                        // std::cout << "collision detected right" << std::endl;
                     }
                     else
                     {
@@ -449,13 +476,11 @@ int main()
                 }
                 else
                 {
-                    // collisionDetected = false;
                     collisionDetectedUp    = false;
                     collisionDetectedDown  = false;
                     collisionDetectedLeft  = false;
                     collisionDetectedRight = false;
                 }
-                // std::cout << collisionDetectedUp << std::endl;
             }
         }
 

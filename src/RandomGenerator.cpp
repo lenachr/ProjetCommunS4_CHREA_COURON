@@ -21,17 +21,29 @@
 // Fonction pour générer un nombre aléatoire entre 0 et 1
 double randomProbability()
 {
-    static std::random_device               rd;
-    static std::mt19937                     gen(rd());
-    static std::uniform_real_distribution<> dis(0, 1);
-    // std::cout << "rnd : " << dis(gen) << std::endl;
-    return dis(gen);
+    double U = static_cast<float>(rand()) / RAND_MAX;
+
+    return U;
+}
+
+// A faire
+float variance()
+{
+    float variance = 0;
+    return variance;
+}
+
+// A faire
+float esperance()
+{
+    float esperance = 0;
+    return esperance;
 }
 
 // Loi binomiale de Bernoulli pour placer les arbres aléaoirement plus dans les angles avec plus de chances que ce soit en face à gauche
 float generateRandomPositionTree()
 {
-    float u = static_cast<float>(rand()) / RAND_MAX;
+    float u = randomProbability();
 
     if (u < 0.7f)
     {
@@ -65,14 +77,16 @@ bool boidFall(double probability)
     return randomProbability() <= probability;
 }
 
-// Fonction pour simuler le temps entre chaque chute de cerf-volant
+// Fonction pour simuler le temps entre chaque chute de cerf-volant avec une loi exponentielle
 double timeBetweenFalls(double lambda)
 {
-    static std::random_device              rd;
-    static std::mt19937                    gen(rd());
-    static std::exponential_distribution<> dis(lambda);
-    // std::cout << "rnd : " << dis(gen) << std::endl;
-    return dis(gen);
+    // Génération d'un nombre aléatoire U entre 0 et 1
+    float U = randomProbability();
+
+    // Calcul de la valeur selon la loi exponentielle
+    float result = -1 / lambda * log(1 - U);
+
+    return result;
 }
 
 // Loi exponentielle qui fait tomber des cerf-volants
@@ -81,40 +95,23 @@ bool boidFalling(float timeStart)
     const double probabilityOfFalling = 0.2; // Probabilité de chute d'un boid
     const double lambda               = 0.1; // Paramètre lambda de la loi exponentielle pour le temps entre chaque chute
     const int    X                    = 15;  // Intervalle de temps entre chaque chute (en secondes)
-    const int    simulationTime       = 60;  // Durée de simulation (en secondes)
 
-    // connaitre le temps écoulé depuis le début de la simulation
+    float timeNow     = static_cast<int>(glfwGetTime() * 1000.0); // Le tmeps actuel
+    float timeElapsed = (timeNow - timeStart) / 1000.0f;          // Le temps écoulé depuis le début de la simulation
 
-    // int timeStart = glutGet(GLUT_ELAPSED_TIME);
-    // int timeNow   = glutGet(GLUT_ELAPSED_TIME);
-    // int elapsed   = timeNow - timeStart;
+    double timeUntilNextFall = timeBetweenFalls(lambda) * 1000; // On choisi aléatoirement le temps avant la prochaine chance de chute
 
-    // int timeElapsed = 0; // Temps écoulé
-    float timeNow     = static_cast<int>(glfwGetTime() * 1000.0); // Assuming GLUT_ELAPSED_TIME is defined in GLUT library
-    float timeElapsed = (timeNow - timeStart) / 10000.0f;
-    // auto start       = std::chrono::high_resolution_clock::now();
-    // auto now         = std::chrono::high_resolution_clock::now();
-    // auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
-    // std::cout << "now : " << now << std::endl;
-    // while (timeElapsed < simulationTime)
-    // {
-    double timeUntilNextFall = timeBetweenFalls(lambda) * 1000;
-    // timeElapsed              = std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count();
-    // timeElapsed += X; // Avance dans le temps de X secondes
-
-    // Vérifie si un boid tombe à ce moment-là
-    // std::cout << "timeUntilNextFall : " << timeUntilNextFall << " & elps time" << timeElapsed << " & now : " << timeNow << std::endl;
+    // On vérifie si on est en dehors de l'intervalle de temps pour la prochaine chance de chute et si on doit chuter
     if (timeUntilNextFall <= X && boidFall(probabilityOfFalling) && timeUntilNextFall > timeElapsed)
     {
-        std::cout << "Un boid est tombé au sol à " << timeElapsed << " secondes." << std::endl;
+        // std::cout << "Un boid tombe au sol apres " << timeElapsed << " secondes." << std::endl;
         return true;
     }
     else
     {
-        return false;
         // std::cout << "Aucun boid n'est tombé au sol à " << timeElapsed << " secondes." << std::endl;
+        return false;
     }
-    // }
 }
 
 // Fonction pour choisir aléatoirement une texture de boid, loi de distribution uniforme
@@ -131,28 +128,105 @@ std::string chooseBoidTexture()
     }
 }
 
-// Choix de la couleur de la pierre selon une distribution normale
-std::string chooseRockColor()
+// Choix de la couleur de la pierre selon une loi normale
+double chooseRockColor()
 {
-    const double meanGrayProbability = 0.7; // Probabilité d'avoir un gris moyen
-    const double meanGrayValue       = 128; // Valeur de gris moyen
-    const double stdDev              = 50;  // Écart-type de la distribution normale
+    // Génération d'un nombre aléatoire U1 et U2
+    double U1 = randomProbability();
+    double U2 = randomProbability();
 
-    double colorValue = randomProbability();
+    // Distribution normale centrée autour de 0 et écart-type 1
+    double Z = sqrt(-2 * log(U1)) * cos(2 * 3.1415 * U2);
 
-    if (colorValue >= 0.25 && colorValue <= 0.75)
+    // Redimensionner et décaler Z pour qu'il soit centré autour de 0.5 et dans l'intervalle [0, 1]
+    double randomNumber = 0.5 + 0.2 * Z; // écart-type = 0.2
+
+    // On empêche la valeur de sortir de l'intervalle [0, 1]
+    if (randomNumber < 0.0)
     {
-        // Gris moyen
-        return "Gray (" + std::to_string(static_cast<int>(colorValue * 255)) + ")";
+        randomNumber = 0.0;
     }
-    else if (colorValue < 0.25)
+    else if (randomNumber > 1.0)
     {
-        // Limite inférieure (noir)
-        return "Dark Gray";
+        randomNumber = 1.0;
+    }
+
+    return randomNumber;
+}
+
+// Fonction pour choisir la vitesse verticale aléatoire du boud avec une distribution de Laplace
+double chooseVerticalBoidSpeed()
+{
+    // Génération de deux nombres aléatoires uniformément distribués U1 et U2 dans l'intervalle [0, 1]
+    double U1 = randomProbability();
+    double U2 = randomProbability();
+
+    // Calcul de la position verticale aléatoire avec une distribution de Laplace
+    double mu           = 0.3; // Moyenne de la distribution (centrée autour de 0.5 pour le milieu de l'intervalle vertical)
+    double b            = 0.2; // Paramètre d'échelle de la distribution (contrôle de la dispersion des valeurs)
+    double randomNumber = mu - b * log(U1 / U2);
+
+    // On empêche la valeur de sortir de l'intervalle [-0.5, 0.5]
+    if (randomNumber < -0.5)
+    {
+        randomNumber = -0.5;
+    }
+    else if (randomNumber > 0.5)
+    {
+        randomNumber = 0.5;
+    }
+
+    return randomNumber;
+}
+
+// Fonction pour placer les maisons sur la carte, loi de distribution bimodale
+double placeHouses()
+{
+    const double centerProbability = 0.8;   // Probabilité que les maisons soient au centre
+    const double centerMin         = -20.0; // Coord min pour le centre
+    const double centerMax         = 0.0;   // Coord max pour le centre
+    const double edgeMin           = -50.0; // Coord min de la carte
+    const double edgeMax           = 30.0;  // Coord max de la carte
+
+    double r = randomProbability();
+
+    // Calculer la position en fonction de la distribution bimodale
+    if (r <= centerProbability)
+    {
+        // Dans le centre
+        double rnd = static_cast<double>(rand());
+
+        double randomNumber = centerMin + (rnd / RAND_MAX) * (centerMax - centerMin);
+
+        // On empêche la valeur de sortir de l'intervalle [-50, 50]
+        if (randomNumber < edgeMin)
+        {
+            randomNumber = edgeMin;
+        }
+        else if (randomNumber > edgeMax)
+        {
+            randomNumber = edgeMax;
+        }
+
+        return static_cast<int>(randomNumber);
     }
     else
     {
-        // Limite supérieure (blanc)
-        return "light Gray";
+        // Dans les bords
+        double rnd = static_cast<double>(rand());
+
+        double randomNumber = edgeMin + (rnd / RAND_MAX) * (edgeMax - edgeMin);
+
+        // On empêche la valeur de sortir de l'intervalle [-50, 50]
+        if (randomNumber < edgeMin)
+        {
+            randomNumber = edgeMin;
+        }
+        else if (randomNumber > edgeMax)
+        {
+            randomNumber = edgeMax;
+        }
+
+        return static_cast<int>(randomNumber);
     }
 }
