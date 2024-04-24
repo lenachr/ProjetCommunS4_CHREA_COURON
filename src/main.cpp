@@ -117,13 +117,13 @@ int main()
     img::Image textureWood      = p6::load_image_buffer("assets/textures/wood.jpg");
     img::Image textureHouse     = p6::load_image_buffer("assets/textures/house.jpg");
     img::Image textureCharacter = p6::load_image_buffer("assets/textures/character.jpg");
-    img::Image textureFloor     = p6::load_image_buffer("assets/textures/floor.jpg");
-    img::Image textureDress     = p6::load_image_buffer("assets/textures/dress.jpg");
-    img::Image textureHead      = p6::load_image_buffer("assets/textures/tete.jpg");
-    img::Image textureLegs      = p6::load_image_buffer("assets/textures/jambes.jpg");
-    img::Image textureBoid01    = p6::load_image_buffer("assets/textures/boid.jpg");
-    img::Image textureBoid02    = p6::load_image_buffer("assets/textures/boid1.png");
-    img::Image textureCarl      = p6::load_image_buffer("assets/textures/Carl.png");
+    img::Image textureFloor     = p6::load_image_buffer("assets/textures/floor02.jpg");
+    // img::Image textureDress     = p6::load_image_buffer("assets/textures/dress.jpg");
+    // img::Image textureHead      = p6::load_image_buffer("assets/textures/tete.jpg");
+    // img::Image textureLegs      = p6::load_image_buffer("assets/textures/jambes.jpg");
+    img::Image textureBoid01   = p6::load_image_buffer("assets/textures/boid.jpg");
+    img::Image textureBoid02   = p6::load_image_buffer("assets/textures/boid1.png");
+    img::Image textureModels3D = p6::load_image_buffer("assets/textures/Colors.png");
 
     std::vector<GLuint> textureID(50);
     // std::vector<GLuint> textureID;
@@ -137,12 +137,12 @@ int main()
     bindTexture(textureID, 3, textureHouse);
     bindTexture(textureID, 4, textureCharacter);
     bindTexture(textureID, 5, textureFloor);
-    bindTexture(textureID, 6, textureDress);
-    bindTexture(textureID, 7, textureHead);
-    bindTexture(textureID, 8, textureLegs);
+    // bindTexture(textureID, 6, textureDress);
+    // bindTexture(textureID, 7, textureHead);
+    // bindTexture(textureID, 8, textureLegs);
     bindTexture(textureID, 9, textureBoid01);
     bindTexture(textureID, 10, textureBoid02);
-    bindTexture(textureID, 11, textureCarl);
+    bindTexture(textureID, 11, textureModels3D);
 
     // Initialisation caméra
     FreeflyCamera freeflyCamera;
@@ -158,6 +158,21 @@ int main()
     // Import modèles 3D
     Model Carl;
     Carl.load_model("assets/models/carl.obj");
+
+    Model clouds;
+    clouds.load_model("assets/models/clouds2.obj");
+
+    Model House;
+    House.load_model("assets/models/house.obj");
+
+    Model rocks;
+    rocks.load_model("assets/models/rocks.obj");
+
+    Model tree1;
+    tree1.load_model("assets/models/tree1.obj");
+
+    Model tree2;
+    tree2.load_model("assets/models/tree2.obj");
 
     // Créer vao et vbo
 
@@ -184,6 +199,21 @@ int main()
 
     GLuint vboCarl = bindVBO(Carl.vertices);
     GLuint vaoCarl = bindVAO(vboCarl);
+
+    GLuint vboClouds = bindVBO(clouds.vertices);
+    GLuint vaoClouds = bindVAO(vboClouds);
+
+    GLuint vboHouse3D = bindVBO(House.vertices);
+    GLuint vaoHouse3D = bindVAO(vboHouse3D);
+
+    GLuint vboRocks = bindVBO(rocks.vertices);
+    GLuint vaoRocks = bindVAO(vboRocks);
+
+    GLuint vboTree1 = bindVBO(tree1.vertices);
+    GLuint vaoTree1 = bindVAO(vboTree1);
+
+    GLuint vboTree2 = bindVBO(tree2.vertices);
+    GLuint vaoTree2 = bindVAO(vboTree2);
 
     // Activer le test de profondeur du GPU
     glEnable(GL_DEPTH_TEST);
@@ -367,10 +397,18 @@ int main()
 
         MVMatrix = glm::rotate(MVMatrix, -1.57f, {0.f, 1.f, 0.f});
 
+        // Modèles 3D
+        glm::mat4 MVMatrix_3D = viewMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, -5.f));
+        MVMatrix_3D           = glm::scale(MVMatrix, glm::vec3{5.f});
+
         // glUniform1f(uAlphaLocation, transparency);
         glUniformMatrix4fv(ObjectProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
         glUniformMatrix4fv(ObjectProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
         glUniformMatrix4fv(ObjectProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+
+        // 3D
+        glUniformMatrix4fv(ObjectProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+        glUniformMatrix4fv(ObjectProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
 
         // boucle qui affiche les boids
         float n = 0.f;
@@ -406,7 +444,9 @@ int main()
         // Boucle pour les arbres
         for (int i = 0; i < trees_number; ++i)
         {
-            renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
+            // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
+            renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+            renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
         }
 
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
@@ -414,8 +454,11 @@ int main()
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
         for (int i = 0; i < nbHouses; ++i)
         {
+            // renderObject(
+            //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+            // );
             renderObject(
-                vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
             );
             // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
         }
