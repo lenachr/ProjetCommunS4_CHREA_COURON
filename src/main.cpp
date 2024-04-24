@@ -114,12 +114,12 @@ int main()
 
     ObjectProgram ObjectProgram{};
 
-    img::Image textureTree      = p6::load_image_buffer("assets/textures/tree.jpg");
-    img::Image textureSky       = p6::load_image_buffer("assets/textures/sky.jpg");
-    img::Image textureWood      = p6::load_image_buffer("assets/textures/wood.jpg");
-    img::Image textureHouse     = p6::load_image_buffer("assets/textures/house.jpg");
-    img::Image textureCharacter = p6::load_image_buffer("assets/textures/character.jpg");
-    img::Image textureFloor     = p6::load_image_buffer("assets/textures/floor02.jpg");
+    img::Image textureTree = p6::load_image_buffer("assets/textures/tree.jpg");
+    img::Image textureSky  = p6::load_image_buffer("assets/textures/sky.jpg");
+    img::Image textureWood = p6::load_image_buffer("assets/textures/wood.jpg");
+    // img::Image textureHouse = p6::load_image_buffer("assets/textures/house.jpg");
+    // img::Image textureCharacter = p6::load_image_buffer("assets/textures/character.jpg");
+    img::Image textureFloor = p6::load_image_buffer("assets/textures/floor02.jpg");
     // img::Image textureDress     = p6::load_image_buffer("assets/textures/dress.jpg");
     // img::Image textureHead      = p6::load_image_buffer("assets/textures/tete.jpg");
     // img::Image textureLegs      = p6::load_image_buffer("assets/textures/jambes.jpg");
@@ -136,8 +136,8 @@ int main()
     bindTexture(textureID, 0, textureTree);
     bindTexture(textureID, 1, textureSky);
     bindTexture(textureID, 2, textureWood);
-    bindTexture(textureID, 3, textureHouse);
-    bindTexture(textureID, 4, textureCharacter);
+    // bindTexture(textureID, 3, textureHouse);
+    // bindTexture(textureID, 4, textureCharacter);
     bindTexture(textureID, 5, textureFloor);
     // bindTexture(textureID, 6, textureDress);
     // bindTexture(textureID, 7, textureHead);
@@ -177,6 +177,9 @@ int main()
     Model tree2;
     tree2.load_model("assets/models/tree2.obj");
 
+    Model ballons;
+    ballons.load_model("assets/models/ballons.obj");
+
     // Créer vao et vbo
 
     GLuint vboTree = bindVBO(tree);
@@ -188,11 +191,11 @@ int main()
     GLuint vboBoid = bindVBO(boid);
     GLuint vaoBoid = bindVAO(vboBoid);
 
-    GLuint vboCharacter = bindVBO(character);
-    GLuint vaoCharacter = bindVAO(vboCharacter);
+    // GLuint vboCharacter = bindVBO(character);
+    // GLuint vaoCharacter = bindVAO(vboCharacter);
 
-    GLuint vboHouse = bindVBO(house);
-    GLuint vaoHouse = bindVAO(vboHouse);
+    // GLuint vboHouse = bindVBO(house);
+    // GLuint vaoHouse = bindVAO(vboHouse);
 
     GLuint vboFloor = bindVBO(floor);
     GLuint vaoFloor = bindVAO(vboFloor);
@@ -221,6 +224,9 @@ int main()
     GLuint vboTree2 = bindVBO(tree2.vertices);
     GLuint vaoTree2 = bindVAO(vboTree2);
 
+    GLuint vboBallons = bindVBO(ballons.vertices);
+    GLuint vaoBallons = bindVAO(vboBallons);
+
     // Activer le test de profondeur du GPU
     glEnable(GL_DEPTH_TEST);
 
@@ -233,7 +239,7 @@ int main()
     glm::vec3 benchTranslation(10.0f, 0.0f, -5.0f);
     glm::vec3 boidTranslation(30.0f, 15.0f, 0.0f);
     glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
-    glm::vec3 cloudsTranslation(30.0f, 70.f, 0.);
+    glm::vec3 ballonsTranslation(-30.0f, -20.f, 50.f);
 
     const int              nbHouses = 10; // Nombre de maisons à placer
     std::vector<glm::vec3> houseTranslation;
@@ -478,16 +484,16 @@ int main()
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
 
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
-        // for (int i = 0; i < nbHouses; ++i)
-        // {
-        //     // renderObject(
-        //     //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
-        //     // );
-        //     renderObject(
-        //         vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
-        //     );
-        //     // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
-        // }
+        for (int i = 0; i < nbHouses; ++i)
+        {
+            // renderObject(
+            //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+            // );
+            renderObject(
+                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
+            );
+            // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
+        }
 
         // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
         glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
@@ -570,7 +576,9 @@ int main()
 
         renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
 
-        renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+        // renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+
+        renderObject(vaoBallons, static_cast<GLsizei>(ballons.vertices.size()), ballonsTranslation, glm::vec3{3.5f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
 
         glBindVertexArray(0);
     };
@@ -579,15 +587,12 @@ int main()
     ctx.start();
 
     glDeleteBuffers(1, &vboBench);
-    glDeleteBuffers(1, &vboHouse);
     // glDeleteBuffers(1, &vboBoid);
-    glDeleteBuffers(1, &vboCharacter);
     // glDeleteBuffers(1, &vboTree);
     glDeleteVertexArrays(1, &vaoBench);
     glDeleteVertexArrays(1, &vaoCube);
     glDeleteVertexArrays(1, &vaoBoid);
     glDeleteVertexArrays(1, &vaoFloor);
-    glDeleteVertexArrays(1, &vaoCharacter);
     glDeleteVertexArrays(1, &vaoTree);
     glDeleteVertexArrays(1, &vaoTree1);
     glDeleteVertexArrays(1, &vaoTree2);
