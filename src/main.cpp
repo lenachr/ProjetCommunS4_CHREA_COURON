@@ -290,7 +290,7 @@ int main()
     // Initialiser les déplacements
     // Translation pour chaque objet
     glm::vec3 benchTranslation(-40.0f, 1.0f, -80.0f);
-    glm::vec3 ballonsTranslation(-30.0f, -20.f, 50.f);
+    glm::vec3 ballonsTranslation(-30.0f, -15.f, 50.f);
 
     const int              nbHouses = 3; // Nombre de maisons à placer
     std::vector<glm::vec3> houseTranslation;
@@ -600,7 +600,7 @@ int main()
             collisionDetectedRight = false;
         }
 
-        renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
+        renderObject(vaoBallons, static_cast<GLsizei>(ballons.vertices.size()), ballonsTranslation, glm::vec3{3.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
 
         glBindVertexArray(0);
     };
