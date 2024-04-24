@@ -17,6 +17,12 @@ private:
     glm::vec3 m_LeftVector;  // L
     glm::vec3 m_UpVector;    // U
 
+    // Méthode pour détecter les collisions avec les bords du cube
+    bool detectCollision() const
+    {
+        return (m_Position.x < -85.0f || m_Position.x > 85.0f || m_Position.z < -85.0f || m_Position.z > 85.0f);
+    }
+
     void computeDirectionVectors()
     {
         m_FrontVector = glm::vec3(
@@ -42,20 +48,36 @@ public:
         computeDirectionVectors();
     }
 
+    // Méthode pour gérer les collisions avec les bords du cube
+    void handleCollision()
+    {
+        // Si la caméra dépasse les limites du cube, ajustez sa position
+        m_Position.x = glm::clamp(m_Position.x, -85.0f, 85.0f);
+        m_Position.z = glm::clamp(m_Position.z, -85.0f, 85.0f);
+    }
+
     // A appeler pour se déplacer vers la droite ou vers la gauche
     void moveLeft(float t)
     {
-        // m_Position += t * m_LeftVector;
         m_Position.x += t * m_LeftVector.x;
         m_Position.z += t * m_LeftVector.z;
+
+        if (detectCollision())
+        {
+            handleCollision();
+        }
     }
 
     // A appeler pour se déplacer vers le haut ou vers le bas
     void moveFront(float t)
     {
-        // m_Position += t * m_FrontVector;
         m_Position.x += t * m_FrontVector.x;
         m_Position.z += t * m_FrontVector.z;
+
+        if (detectCollision())
+        {
+            handleCollision();
+        }
     }
 
     // A appeler pour tourter la caméra vers la gauche ou vers la droite
@@ -81,8 +103,9 @@ public:
     glm::mat4 getViewMatrix() const
     {
         glm::vec3 target = m_Position + m_FrontVector; // Déplacez le point de vue légèrement devant la caméra
-        glm::vec3 up     = m_UpVector;
-        glm::vec3 eye    = m_Position; // Position de la caméra
+        // glm::vec3 target = m_Position; // Déplacez le point de vue légèrement devant la caméra
+        glm::vec3 up  = m_UpVector;
+        glm::vec3 eye = m_Position; // Position de la caméra
 
         return glm::lookAt(eye, target, up);
     }

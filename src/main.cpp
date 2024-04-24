@@ -417,7 +417,7 @@ int main()
         // Pour être légèrement au dessus du personnage
         characterPosition.y -= characterPosition.y;
 
-        // Gestion collisions
+        // Collisions arbre
         for (int i = 0; i < boids_number; i++)
         {
             // Vérifier la collision avec chaque arbre
@@ -425,55 +425,57 @@ int main()
             {
                 if (detectCollision(characterPosition, treeTranslation[j], 2, 2))
                 {
-                    if (upPressed)
-                    {
-                        collisionDetectedUp = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_W))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedUp = false;
-                    }
-                    if (downPressed)
-                    {
-                        collisionDetectedDown = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_S))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedDown = false;
-                    }
-                    if (leftPressed)
-                    {
-                        collisionDetectedLeft = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_A))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedLeft = false;
-                    }
-                    if (rightPressed)
-                    {
-                        collisionDetectedRight = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_D))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedRight = false;
-                    }
+                    freeflyCamera.handleCollision();
                 }
+                // if (upPressed)
+                // {
+                //     collisionDetectedUp = true;
+                //     if (ctx.key_is_pressed(GLFW_KEY_W))
+                //     {
+                //         return;
+                //     }
+                // }
+                // else
+                // {
+                //     collisionDetectedUp = false;
+                // }
+                // if (downPressed)
+                // {
+                //     collisionDetectedDown = true;
+                //     if (ctx.key_is_pressed(GLFW_KEY_S))
+                //     {
+                //         return;
+                //     }
+                // }
+                // else
+                // {
+                //     collisionDetectedDown = false;
+                // }
+                // if (leftPressed)
+                // {
+                //     collisionDetectedLeft = true;
+                //     if (ctx.key_is_pressed(GLFW_KEY_A))
+                //     {
+                //         return;
+                //     }
+                // }
+                // else
+                // {
+                //     collisionDetectedLeft = false;
+                // }
+                // if (rightPressed)
+                // {
+                //     collisionDetectedRight = true;
+                //     if (ctx.key_is_pressed(GLFW_KEY_D))
+                //     {
+                //         return;
+                //     }
+                // }
+                // else
+                // {
+                //     collisionDetectedRight = false;
+                // }
+                // }
                 else
                 {
                     collisionDetectedUp    = false;

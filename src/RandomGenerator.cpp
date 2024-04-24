@@ -230,3 +230,22 @@ double placeHouses()
         return static_cast<int>(randomNumber);
     }
 }
+
+// Si le boid rencontre un nuage
+bool crossNuage()
+{
+    double rnd   = randomProbability();
+    double proba = 0.8; // On définit la probabilité que le nuage ait un effet
+
+    if (rnd < proba)
+    {
+        std::cout << "Le nuage affectent la vitesse" << std::endl;
+        return true;
+    }
+    else
+    {
+        // Les nuages n'affectent pas la vitesse
+        std::cout << "Le nuages n'affecte pas la vitesse." << std::endl;
+        return false;
+    }
+}

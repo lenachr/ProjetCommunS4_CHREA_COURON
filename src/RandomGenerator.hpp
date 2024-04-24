@@ -23,3 +23,5 @@ double chooseRockColor();
 double chooseVerticalBoidSpeed();
 // Fonction pour placer les maisons sur la carte, loi de distribution bimodale
 double placeHouses();
+// Si le boid rencontre un nuage
+bool crossNuage();
