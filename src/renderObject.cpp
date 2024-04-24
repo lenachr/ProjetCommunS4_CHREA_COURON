@@ -58,7 +58,7 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
 {
     // Calculate model matrix with translation
     glm::mat4 MVMatrix = viewMatrix * glm::translate(glm::mat4(1.0f), translation);
-    MVMatrix           = glm::rotate(MVMatrix, rotation, {0.f, 1.f, 0.f});
+    MVMatrix           = glm::rotate(MVMatrix, rotation, {1.f, 1.f, 0.f});
     MVMatrix           = glm::scale(MVMatrix, scale);
     NormalMatrix       = glm::transpose(glm::inverse(MVMatrix));
 
