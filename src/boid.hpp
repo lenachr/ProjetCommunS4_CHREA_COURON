@@ -13,7 +13,7 @@ public:
         : position{position}, speed{speed}, falling(false)
     {}
 
-    void draw(GLuint vao, GLsizei vertexCount, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID);
+    void draw(GLuint vao, GLsizei vertexCount, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID, float coefLight);
     void update(std::vector<Boid>& allBoid, float alignement_coeff, float cohesion_coeff, float separation_coeff);
     ~Boid();
 

@@ -15,6 +15,7 @@ struct ObjectProgram {
     GLint uKd;
     GLint uKs;
     GLint uShininess;
+    GLint coefLight;
 
     ObjectProgram()
         // : m_Program{p6::load_shader("src/shaders/3D.vs.glsl", "src/shaders/tex3D.fs.glsl")}
@@ -32,5 +33,6 @@ struct ObjectProgram {
         uKd             = glGetUniformLocation(m_Program.id(), "uKd");
         uKs             = glGetUniformLocation(m_Program.id(), "uKs");
         uShininess      = glGetUniformLocation(m_Program.id(), "uShininess");
+        coefLight       = glGetUniformLocation(m_Program.id(), "coefLight");
     }
 };

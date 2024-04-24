@@ -12,6 +12,7 @@ uniform sampler2D uTexture;
 uniform vec3 uKd;
 uniform vec3 uKs;
 uniform float uShininess;
+uniform float coefLight;
 // uniform vec3 vPosition_vs;
 uniform vec3 uLightDir_vs; // Notez le suffixe _vs sur la direction : cela indique que nous allons travailler dans le view space ; il faudra donc multiplier la direction de la lumière par la View Matrix avant de l'envoyer au shader.
 uniform vec3 uLightIntensity;
@@ -41,7 +42,7 @@ void main()
 
     vec3 color = blinnPhong(vNormal_vs, vPosition_vs, uLightIntensity, uShininess, uKd, uKs); 
     // fFragColor= vec4 (color, 1.0f);
-    fFragColor = vec4(mix(texture.rgb, color, 0.6f), texture.a);
+    fFragColor = vec4(mix(texture.rgb, color, coefLight), texture.a);
 
     // fFragColor = vec4(0.1f, 1.0f, 0.5f, 0.5f);
 }

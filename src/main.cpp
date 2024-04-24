@@ -128,6 +128,7 @@ int main()
     float             cohesion_coeff   = 5.f;
     float             separation_coeff = 5.f;
     int               lod              = 1;
+    float             coefLight        = 0.5;
 
     std::string textures[100]; // Déclaration du tableau de textures
 
@@ -429,13 +430,8 @@ int main()
         ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 50);
         // Choix entre 3 LOD's
         ImGui::SliderInt("LOD", &lod, 0, 2);
+        ImGui::SliderFloat("Coefficient de lumière", &coefLight, 0, 1);
         ImGui::End();
-
-        // Mise à jour position personnage
-        glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
-
-        // Pour être légèrement au dessus du personnage
-        characterPosition.y -= characterPosition.y;
 
         // Calcul viewMatrix
 
@@ -447,6 +443,15 @@ int main()
 
         MVMatrix = glm::rotate(MVMatrix, -1.57f, {0.f, 1.f, 0.f});
 
+        // Mise à jour position personnage
+        glm::vec3 cameraPosition    = freeflyCamera.getPosition();
+        glm::vec3 cameraFrontVector = freeflyCamera.getFrontVector();
+
+        glm::vec3 characterPosition = cameraPosition + characterDistance * cameraFrontVector;
+        // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
+
+        // Pour être légèrement au dessus du personnage
+        characterPosition.y -= characterPosition.y;
         // boucle qui affiche les boids
         float n = 0.f;
         float m = 0.f;
@@ -456,33 +461,33 @@ int main()
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight);
                 }
             }
             if (lod == 1)
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight);
                 }
             }
             if (lod == 2)
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight);
                 }
             }
 
@@ -507,27 +512,27 @@ int main()
             // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
             if (selectedTree[i] == 1)
             {
-                renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+                renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
             }
             else
             {
-                renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+                renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
             }
         }
 
-        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
+        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1], coefLight);
 
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
-        // for (int i = 0; i < nbHouses; ++i)
-        // {
-        //     // renderObject(
-        //     //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
-        //     // );
-        //     renderObject(
-        //         vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
-        //     );
-        //     // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
-        // }
+        for (int i = 0; i < nbHouses; ++i)
+        {
+            // renderObject(
+            //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+            // );
+            renderObject(
+                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight
+            );
+            // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
+        }
 
         // Vérifier la collision avec chaque maison
         for (int i = 0; i < nbHouses; ++i)
@@ -568,11 +573,14 @@ int main()
             }
         }
 
-        renderObject(vaoCarl, static_cast<GLsizei>(Carl.vertices.size()), characterPosition, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+        float angle = atan2(cameraFrontVector.x, cameraFrontVector.z);
+        // Appliquer la rotation à la matrice de modèle-vue
+        MVMatrix = glm::rotate(MVMatrix, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+        renderObject(vaoCarl, static_cast<GLsizei>(Carl.vertices.size()), characterPosition, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
 
-        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5]);
+        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5], coefLight);
 
-        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), benchTranslation, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
+        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), benchTranslation, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2], coefLight);
 
         if (detectCollision(characterPosition, benchTranslation, 2, 2))
         {
@@ -586,7 +594,7 @@ int main()
             collisionDetectedRight = false;
         }
 
-        renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+        renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
 
         glBindVertexArray(0);
     };
