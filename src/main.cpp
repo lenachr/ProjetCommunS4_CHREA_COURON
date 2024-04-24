@@ -72,9 +72,9 @@ int main()
     // initialisation des boids et des coefficients des règles de base
     std::vector<Boid> boids{};
     int               boids_number     = 20;
-    float             alignement_coeff = 7.f;
+    float             alignement_coeff = 5.f;
     float             cohesion_coeff   = 5.f;
-    float             separation_coeff = 2.f;
+    float             separation_coeff = 5.f;
     int               lod              = 1;
 
     std::string textures[100]; // Déclaration du tableau de textures
@@ -160,7 +160,7 @@ int main()
 
     // Import modèles 3D
     Model Carl;
-    Carl.load_model("assets/models/carl.obj");
+    Carl.load_model("assets/models/carl_doug.obj");
 
     Model clouds;
     clouds.load_model("assets/models/clouds2.obj");
@@ -233,6 +233,7 @@ int main()
     glm::vec3 benchTranslation(10.0f, 0.0f, -5.0f);
     glm::vec3 boidTranslation(30.0f, 15.0f, 0.0f);
     glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
+    glm::vec3 cloudsTranslation(30.0f, 70.f, 0.);
 
     const int              nbHouses = 10; // Nombre de maisons à placer
     std::vector<glm::vec3> houseTranslation;
@@ -373,9 +374,9 @@ int main()
         // Show a simple window
         ImGui::Begin("Choice of parameters");
         ImGui::SliderInt("Number of boids", &boids_number, 1, 100);
-        ImGui::SliderFloat("Alignement distance", &alignement_coeff, 0, 30);
-        ImGui::SliderFloat("Cohesion distance", &cohesion_coeff, 0, 30);
-        ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 30);
+        ImGui::SliderFloat("Alignement distance", &alignement_coeff, 0, 10);
+        ImGui::SliderFloat("Cohesion distance", &cohesion_coeff, 0, 10);
+        ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 50);
         // Choix entre 3 LOD's
         ImGui::SliderInt("LOD", &lod, 0, 2);
         ImGui::End();
@@ -399,22 +400,22 @@ int main()
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
                 }
             }
             if (lod == 1)
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
                 }
             }
             if (lod == 2)
@@ -477,16 +478,16 @@ int main()
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
 
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
-        for (int i = 0; i < nbHouses; ++i)
-        {
-            // renderObject(
-            //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
-            // );
-            renderObject(
-                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
-            );
-            // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
-        }
+        // for (int i = 0; i < nbHouses; ++i)
+        // {
+        //     // renderObject(
+        //     //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+        //     // );
+        //     renderObject(
+        //         vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
+        //     );
+        //     // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
+        // }
 
         // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
         glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
@@ -569,7 +570,7 @@ int main()
 
         renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
 
-        // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+        renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
 
         glBindVertexArray(0);
     };
@@ -588,6 +589,12 @@ int main()
     glDeleteVertexArrays(1, &vaoFloor);
     glDeleteVertexArrays(1, &vaoCharacter);
     glDeleteVertexArrays(1, &vaoTree);
+    glDeleteVertexArrays(1, &vaoTree1);
+    glDeleteVertexArrays(1, &vaoTree2);
+    glDeleteVertexArrays(1, &vaoCarl);
+    glDeleteVertexArrays(1, &vaoClouds);
+    glDeleteVertexArrays(1, &vaoRocks);
+    glDeleteVertexArrays(1, &vaoHouse3D);
 
     glDeleteTextures(static_cast<GLsizei>(textureID.size()), textureID.data());
 }
