@@ -15,7 +15,7 @@
 
 // RAPPORT
 // Décrire les variables aléatoires : comment elles interviennet dans le programme, la méthode de simulaiton utilisée, pourquoi on a choisi cette loi
-// Descriptif de la chaine de Markov
+// Descriptif de la chaine de Markov ainsi qu'éventuellement d'autres structures de correlations
 // Difficultés rencontrèes et regard citique sur le projet
 
 // Fonction pour générer un nombre aléatoire entre 0 et 1
@@ -27,25 +27,60 @@ double randomProbability()
 }
 
 // A faire
-float variance()
+float variance(int loi, float p, float q)
 {
-    float variance = 0;
-    return variance;
+    switch (loi)
+    {
+    case 1: // Loi binomiale de Bernoulli
+        return p * (1 - p);
+    case 2: // Loi exponentielle
+        return 1 / (p * p);
+    case 3: // Loi uniforme
+        return ((q - p) * (q - p)) / 12;
+    case 4: // Loi normale
+        return q * q;
+    case 5: // Loi de Laplace
+        return 2 * q * q;
+    default:
+        return -1; // Type de loi invalide
+    }
+    // float variance = 0;
+    // return variance;
 }
 
 // A faire
-float esperance()
+float esperance(int loi, float p, float q)
 {
-    float esperance = 0;
-    return esperance;
+    switch (loi)
+    {
+    case 1: // Loi binomiale de Bernoulli
+        return p;
+    case 2: // Loi exponentielle
+        return 1 / p;
+    case 3: // Loi uniforme
+        return (p + q) / 2;
+    case 4: // Loi normale
+        return p;
+    case 5: // Loi de Laplace
+        return p;
+    default:
+        return -1; // Type de loi invalide
+    }
+    // float esperance = 0;
+    // return esperance;
 }
 
 // Loi binomiale de Bernoulli pour placer les arbres aléaoirement plus dans les angles avec plus de chances que ce soit en face à gauche
 float generateRandomPositionTree()
 {
     float u = randomProbability();
+    float p = 0.7f;
 
-    if (u < 0.7f)
+    // Affichage variance et esperance
+    // std::cout << "Esperance : " << esperance(1, p, 0) << std::endl;
+    // std::cout << "Variance : " << variance(1, p, 0) << std::endl;
+
+    if (u < p)
     {
         return 0.0f + u * 100.0f;
     }
@@ -54,22 +89,6 @@ float generateRandomPositionTree()
         return 0.0f + u * -100.0f;
     }
 }
-
-// float randPoisson(float alpha)
-// {
-//     float L = std::exp(-alpha);
-//     float p = 1.0;
-//     float k = 0;
-
-//     do
-//     {
-//         k++;
-//         p *= static_cast<float>(std::rand()) / RAND_MAX;
-//         k += static_cast<float>(std::rand()) / (RAND_MAX / 2) - 1.0f;
-//     } while (p > L);
-
-//     return k * 10;
-// }
 
 // Fonction pour simuler une chute de cerf-volant
 bool boidFall(double probability)
@@ -96,10 +115,14 @@ bool boidFalling(float timeStart)
     const double lambda               = 0.1; // Paramètre lambda de la loi exponentielle pour le temps entre chaque chute
     const int    X                    = 15;  // Intervalle de temps entre chaque chute (en secondes)
 
+    // Affichage variance et esperance
+    // std::cout << "Esperance : " << esperance(2, lambda, 0) << std::endl;
+    // std::cout << "Variance : " << variance(2, lambda, 0) << std::endl;
+
     float timeNow     = static_cast<int>(glfwGetTime() * 1000.0); // Le tmeps actuel
     float timeElapsed = (timeNow - timeStart) / 1000.0f;          // Le temps écoulé depuis le début de la simulation
 
-    double timeUntilNextFall = timeBetweenFalls(lambda) * 1000; // On choisi aléatoirement le temps avant la prochaine chance de chute
+    double timeUntilNextFall = timeBetweenFalls(lambda) * 10000; // On choisi aléatoirement le temps avant la prochaine chance de chute
 
     // On vérifie si on est en dehors de l'intervalle de temps pour la prochaine chance de chute et si on doit chuter
     if (timeUntilNextFall <= X && boidFall(probabilityOfFalling) && timeUntilNextFall > timeElapsed)
@@ -114,10 +137,15 @@ bool boidFalling(float timeStart)
     }
 }
 
-// Fonction pour choisir aléatoirement une texture de boid, loi de distribution uniforme
+// Fonction pour choisir aléatoirement une texture de boid, loi de Bernoulli
 std::string chooseBoidTexture()
 {
     const double probabilityTexture1 = 0.4;
+
+    // Affichage variance et esperance
+    // std::cout << "Esperance : " << esperance(1, probabilityTexture1, 0) << std::endl;
+    // std::cout << "Variance : " << variance(1, probabilityTexture1, 0) << std::endl;
+
     if (randomProbability() <= probabilityTexture1)
     {
         return "Texture 1";
@@ -139,7 +167,13 @@ double chooseRockColor()
     double Z = sqrt(-2 * log(U1)) * cos(2 * 3.1415 * U2);
 
     // Redimensionner et décaler Z pour qu'il soit centré autour de 0.5 et dans l'intervalle [0, 1]
-    double randomNumber = 0.5 + 0.2 * Z; // écart-type = 0.2
+    double mu           = 0.5;
+    double sigma        = 0.2;
+    double randomNumber = mu + sigma * Z; // écart-type = 0.2
+
+    // Affichage variance et esperance
+    // std::cout << "Esperance : " << esperance(4, mu, sigma) << std::endl;
+    // std::cout << "Variance : " << variance(4, mu, sigma) << std::endl;
 
     // On empêche la valeur de sortir de l'intervalle [0, 1]
     if (randomNumber < 0.0)
@@ -154,7 +188,7 @@ double chooseRockColor()
     return randomNumber;
 }
 
-// Fonction pour choisir la vitesse verticale aléatoire du boud avec une distribution de Laplace
+// Fonction pour choisir la vitesse verticale aléatoire du boid avec une distribution de Laplace
 double chooseVerticalBoidSpeed()
 {
     // Génération de deux nombres aléatoires uniformément distribués U1 et U2 dans l'intervalle [0, 1]
@@ -165,6 +199,10 @@ double chooseVerticalBoidSpeed()
     double mu           = 0.3; // Moyenne de la distribution (centrée autour de 0.5 pour le milieu de l'intervalle vertical)
     double b            = 0.2; // Paramètre d'échelle de la distribution (contrôle de la dispersion des valeurs)
     double randomNumber = mu - b * log(U1 / U2);
+
+    // Affichage variance et esperance
+    // std::cout << "Esperance : " << esperance(5, mu, b) << std::endl;
+    // std::cout << "Variance : " << variance(5, mu, b) << std::endl;
 
     // On empêche la valeur de sortir de l'intervalle [-0.5, 0.5]
     if (randomNumber < -0.5)
@@ -189,6 +227,12 @@ double placeHouses()
     const double edgeMax           = 30.0;  // Coord max de la carte
 
     double r = randomProbability();
+
+    // Affichage variance et esperance
+    // double esperance = centerProbability * ((centerMin + centerMax) / 2) + (1 - centerProbability) * ((edgeMin + edgeMax) / 2);
+    // double variance  = centerProbability * pow(((centerMax - centerMin) / 2), 2) + (1 - centerProbability) * pow(((edgeMax - edgeMin) / 2), 2) + centerProbability * (1 - centerProbability) * pow(((centerMax - centerMin) / 2) - ((edgeMin + edgeMax) / 2), 2);
+    // std::cout << "Esperance : " << esperance << std::endl;
+    // std::cout << "Variance : " << variance << std::endl;
 
     // Calculer la position en fonction de la distribution bimodale
     if (r <= centerProbability)
@@ -237,15 +281,43 @@ bool crossNuage()
     double rnd   = randomProbability();
     double proba = 0.8; // On définit la probabilité que le nuage ait un effet
 
+    // Affichage variance et esperance
+    // std::cout << "Esperance : " << esperance(1, proba, 0) << std::endl;
+    // std::cout << "Variance : " << variance(1, proba, 0) << std::endl;
+
     if (rnd < proba)
     {
-        std::cout << "Le nuage affectent la vitesse" << std::endl;
+        // std::cout << "Le nuage affectent la vitesse" << std::endl;
         return true;
     }
     else
     {
-        // Les nuages n'affectent pas la vitesse
-        std::cout << "Le nuages n'affecte pas la vitesse." << std::endl;
+        // std::cout << "Le nuages n'affecte pas la vitesse." << std::endl;
         return false;
     }
+}
+
+// Sélectionner le type d'arbre
+int selectTree()
+{
+    double              random                = randomProbability();
+    double              cumulativeProbability = 0.0;
+    std::vector<double> treeProbabilities     = {0.7, 0.3};
+
+    // Affichage variance et esperance
+    double esperance = treeProbabilities[0] * 0 + treeProbabilities[1] * 1;
+    double variance  = treeProbabilities[0] * (0 - esperance) * (0 - esperance) + treeProbabilities[1] * (1 - esperance) * (1 - esperance);
+    std::cout << "Esperance : " << esperance << std::endl;
+    std::cout << "Variance : " << variance << std::endl;
+
+    for (int i = 0; i < treeProbabilities.size(); ++i)
+    {
+        cumulativeProbability += treeProbabilities[i];
+        if (random < cumulativeProbability)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }

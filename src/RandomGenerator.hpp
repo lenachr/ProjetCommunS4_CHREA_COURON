@@ -25,3 +25,5 @@ double chooseVerticalBoidSpeed();
 double placeHouses();
 // Si le boid rencontre un nuage
 bool crossNuage();
+// Sélectionner le type d'arbre
+int selectTree();
