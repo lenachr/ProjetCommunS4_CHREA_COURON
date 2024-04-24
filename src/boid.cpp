@@ -1,6 +1,6 @@
 #include "boid.hpp"
 
-void Boid::draw(p6::Context* ctx, GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID)
+void Boid::draw(GLuint vao, GLsizei vertexCount, glm::vec3 Translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID)
 {
     // ctx->triangle(
     // p6::Point2D{-0.05f, 0.035f}, p6::Point2D{-0.05f, -0.035f}, p6::Point2D{0.05f, 0.f}, p6::Center{position}, p6::Rotation{speed}
@@ -14,7 +14,7 @@ Boid::~Boid()
 }
 
 // Methode qui gère les mouvements
-void Boid::apply_speed()
+void Boid::apply_speed(std::vector<Boid>& allBoids)
 {
     if (falling == true)
     {
@@ -26,63 +26,96 @@ void Boid::apply_speed()
         position.y += speed.y;
         position.z += speed.z;
 
-        // Si contact mur haut
-        if (position.y > 60.f) //-1.1f
+        for (size_t i = 0; i < allBoids.size(); i++)
         {
-            speed.y = -speed.y;
+            // Si contact mur haut
+            if (allBoids[i].position.y > 100.f) //-1.1f
+            {
+                // allBoids.erase(allBoids.begin() + i);
+                // i--;
+                // allBoids.push_back(Boid{
+                //     /*position = */ glm::vec3{p6::random::number(-45.f, 45.0f), 30.f, p6::random::number(-90.f, 90.0f)},
+                //     /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+                // });
+                allBoids[i].position.y = 30.f;
+            }
+            // Si contact mur bas
+            if (allBoids[i].position.y < 30.0f) // 0.75f
+            {
+                // speed.x = 0;
+                // speed.y = 0;
+                // speed.z = 0;
+                allBoids[i].position.y = 99.f;
+                // allBoids.erase(allBoids.begin() + i);
+                // i--;
+                // allBoids.push_back(Boid{
+                //     /*position = */ glm::vec3{p6::random::number(-45.f, 45.0f), 99.f, p6::random::number(-90.f, 90.0f)},
+                //     /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+                // });
+            }
 
-            // position.y = 25.0f;
-        }
-        // Si contact mur bas
-        if (position.y < 30.0f) // 0.75f
-        {
-            // speed.x = 0;
-            // speed.y = 0;
-            // speed.z = 0;
-            speed.y = -speed.y;
-            // position.y = -40.0f;
-        }
+            // Si contact mur gauche
+            if (allBoids[i].position.x < -45.f)
+            {
+                allBoids[i].position.x = 45.f;
+                // speed.x = 0;
+                // speed.y = 0;
+                // speed.z = 0;
+                // allBoids.erase(allBoids.begin() + i);
+                // i--;
+                // allBoids.push_back(Boid{
+                //     /*position = */ glm::vec3{45.0f, p6::random::number(50.f, 90.f), p6::random::number(-90.f, 90.0f)},
+                //     /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+                // });
+                // position.x = 40.f;
+                // speed.x = -speed.x;
+                // position.z = 45.f;
+            }
 
-        // Si contact mur gauche
-        if (position.x < -45.f)
-        {
-            // speed.x = 0;
-            // speed.y = 0;
-            // speed.z = 0;
-            // position.x = 40.f;
-            speed.x = -speed.x;
-            // position.z = 45.f;
-        }
+            // // Si contact mur droit
+            if (allBoids[i].position.x > 45.f)
+            {
+                // speed.x = 0;
+                // speed.y = 0;
+                // speed.z = 0;
+                allBoids[i].position.x = -45.f;
+                // allBoids.erase(allBoids.begin() + i);
+                // i--;
+                // allBoids.push_back(Boid{
+                //     /*position = */ glm::vec3{-45.f, p6::random::number(50.f, 90.f), p6::random::number(-90.f, 90.0f)},
+                //     /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+                // });
+            }
 
-        // Si contact mur droit
-        if (position.x > 45.f)
-        {
-            // speed.x    = 0;
-            // speed.y    = 0;
-            // speed.z    = 0;
-            // position.x = -40.0f;
-            // position.z = -45.0f;
-            speed.x = -speed.x;
-        }
+            // // Si contact mur profondeur gauche
+            if (allBoids[i].position.z < -90.f) //-1.1f
+            {
+                allBoids[i].position.z = 90.f;
+                // speed.x = 0;
+                // speed.y = 0;
+                // speed.z = 0;
+                // allBoids.erase(allBoids.begin() + i);
+                // i--;
+                // allBoids.push_back(Boid{
+                //     /*position = */ glm::vec3{p6::random::number(-45.f, 45.0f), p6::random::number(50.f, 90.f), 90.0f},
+                //     /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+                // });
+            }
 
-        if (position.z < -90.f) //-1.1f
-        {
-            // speed.x    = 0;
-            // speed.y    = 0;
-            // speed.z    = 0;
-            // position.z = 40.f;
-            // position.z = 45.f;
-            speed.z = -speed.z;
-        }
-        // Si contact mur droit
-        if (position.z > 90.f) // 0.75f
-        {
-            // speed.x    = 0;
-            // speed.y    = 0;
-            // speed.z    = 0;
-            // position.z = -40.0f;
-            // position.z = -45.0f;
-            speed.z = -speed.z;
+            // // // Si contact mur profondeur droit
+            if (allBoids[i].position.z > 90.f)
+            {
+                allBoids[i].position.z = -90.f;
+                // speed.x = 0;
+                // speed.y = 0;
+                // speed.z = 0;
+                // allBoids.erase(allBoids.begin() + i);
+                // i--;
+                // allBoids.push_back(Boid{
+                //     /*position = */ glm::vec3{p6::random::number(-45.f, 45.0f), p6::random::number(50.f, 90.f), -90.0f},
+                //     /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f), p6::random::number(-0.5f, 0.1f)),
+                // });
+            }
         }
     }
 }
@@ -189,9 +222,9 @@ void Boid::separation(const std::vector<Boid>& allBoids, float separationDistanc
     }
 }
 
-void Boid::update(const std::vector<Boid>& allBoids, float alignement_coeff, float cohesion_coeff, float separation_coeff)
+void Boid::update(std::vector<Boid>& allBoids, float alignement_coeff, float cohesion_coeff, float separation_coeff)
 {
-    apply_speed();
+    apply_speed(allBoids);
     alignement(allBoids, alignement_coeff);
     cohesion(allBoids, cohesion_coeff, 0.01);
     separation(allBoids, separation_coeff, 0.1f);

@@ -70,22 +70,23 @@ int main()
 
     // initialisation des boids et des coefficients des règles de base
     std::vector<Boid> boids{};
-    int               boids_number     = 1;
-    float             alignement_coeff = 0.1f;
-    float             cohesion_coeff   = 0.1f;
-    float             separation_coeff = 0.01f;
+    int               boids_number     = 20;
+    float             alignement_coeff = 7.f;
+    float             cohesion_coeff   = 5.f;
+    float             separation_coeff = 2.f;
 
-    std::string textures[50]; // Déclaration du tableau de textures
+    std::string textures[600]; // Déclaration du tableau de textures
 
     // Remplissage du tableau avec les sorties de chooseBoidTexture()
-    for (int i = 0; i < 50; ++i)
+    for (int i = 0; i < 600; ++i)
     {
         textures[i] = chooseBoidTexture();
     }
     // Ajout dans le vector des position aléatoire pour les boids
     float bas  = 0.0f;
     float haut = 0.0f;
-    for (int i = 0; i < 50; i++)
+    // for (int i = 0; i < 50; i++)
+    for (int i = 0; i < 600; i++)
     {
         double verticalSpeed = chooseVerticalBoidSpeed();
         if (verticalSpeed < 0)
@@ -97,7 +98,8 @@ int main()
             haut++;
         }
         boids.push_back(Boid{
-            /*position = */ glm::vec3{p6::random::number(-100.f, 100.0f), p6::random::number(70.f, 100.f), p6::random::number(-100.f, 100.0f)},
+            // /*position = */ glm::vec3{p6::random::number(-100.f, 100.0f), p6::random::number(70.f, 100.f), p6::random::number(-100.f, 100.0f)},
+            /*position = */ glm::vec3{p6::random::number(-45.f, 45.0f), p6::random::number(50.f, 90.f), p6::random::number(-90.f, 90.0f)},
             // /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f)),
             /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f), verticalSpeed),
         });
@@ -121,6 +123,7 @@ int main()
     img::Image textureLegs      = p6::load_image_buffer("assets/textures/jambes.jpg");
     img::Image textureBoid01    = p6::load_image_buffer("assets/textures/boid.jpg");
     img::Image textureBoid02    = p6::load_image_buffer("assets/textures/boid1.png");
+    img::Image textureCarl      = p6::load_image_buffer("assets/textures/Carl.png");
 
     std::vector<GLuint> textureID(50);
     // std::vector<GLuint> textureID;
@@ -139,6 +142,7 @@ int main()
     bindTexture(textureID, 8, textureLegs);
     bindTexture(textureID, 9, textureBoid01);
     bindTexture(textureID, 10, textureBoid02);
+    bindTexture(textureID, 11, textureCarl);
 
     // Initialisation caméra
     FreeflyCamera freeflyCamera;
@@ -150,6 +154,10 @@ int main()
     const std::vector<glimac::ShapeVertex> house     = glimac::house_vertices(3.f);
     const std::vector<glimac::ShapeVertex> floor     = glimac::floor_vertices(100.f);
     const std::vector<glimac::ShapeVertex> cube      = glimac::cube_vertices(100.f, 100.f, 100.f);
+
+    // Import modèles 3D
+    Model Carl;
+    Carl.load_model("assets/models/carl.obj");
 
     // Créer vao et vbo
 
@@ -173,6 +181,9 @@ int main()
 
     GLuint vboCube = bindVBO(cube);
     GLuint vaoCube = bindVAO(vboCube);
+
+    GLuint vboCarl = bindVBO(Carl.vertices);
+    GLuint vaoCarl = bindVAO(vboCarl);
 
     // Activer le test de profondeur du GPU
     glEnable(GL_DEPTH_TEST);
@@ -340,10 +351,10 @@ int main()
         // Gestion des boids
         // Show a simple window
         ImGui::Begin("Choice of parameters");
-        ImGui::SliderInt("Number of boids", &boids_number, 1, 50);
-        ImGui::SliderFloat("Alignement distance", &alignement_coeff, 0, 0.3);
-        ImGui::SliderFloat("Cohesion distance", &cohesion_coeff, 0, 0.3);
-        ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 0.1);
+        ImGui::SliderInt("Number of boids", &boids_number, 1, 100);
+        ImGui::SliderFloat("Alignement distance", &alignement_coeff, 0, 30);
+        ImGui::SliderFloat("Cohesion distance", &cohesion_coeff, 0, 30);
+        ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 30);
         ImGui::End();
 
         // Calcul viewMatrix
@@ -368,13 +379,11 @@ int main()
         {
             if (textures[i] == "Texture 1")
             {
-                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
-                n += 1;
+                boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
             }
             else
             {
-                boids[i].draw(&ctx, vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
-                m += 1;
+                boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
             }
             if (boidFalling(timeStart))
             {
@@ -486,7 +495,7 @@ int main()
             }
         }
 
-        renderObject(vaoCharacter, static_cast<GLsizei>(character.size()), characterPosition, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[4]);
+        renderObject(vaoCarl, static_cast<GLsizei>(Carl.vertices.size()), characterPosition, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
 
         renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5]);
 
