@@ -74,6 +74,7 @@ int main()
     float             alignement_coeff = 7.f;
     float             cohesion_coeff   = 5.f;
     float             separation_coeff = 2.f;
+    int               lod              = 1;
 
     std::string textures[600]; // Déclaration du tableau de textures
 
@@ -154,6 +155,7 @@ int main()
     const std::vector<glimac::ShapeVertex> house     = glimac::house_vertices(3.f);
     const std::vector<glimac::ShapeVertex> floor     = glimac::floor_vertices(100.f);
     const std::vector<glimac::ShapeVertex> cube      = glimac::cube_vertices(100.f, 100.f, 100.f);
+    const std::vector<glimac::ShapeVertex> boidCube  = glimac::cube_vertices(2.f, 2.f, 0.5f);
 
     // Import modèles 3D
     Model Carl;
@@ -181,6 +183,9 @@ int main()
 
     GLuint vboCube = bindVBO(cube);
     GLuint vaoCube = bindVAO(vboCube);
+
+    GLuint vboBoidCube = bindVBO(boidCube);
+    GLuint vaoBoidCube = bindVAO(vboBoidCube);
 
     GLuint vboCarl = bindVBO(Carl.vertices);
     GLuint vaoCarl = bindVAO(vboCarl);
@@ -340,6 +345,8 @@ int main()
         ImGui::SliderFloat("Alignement distance", &alignement_coeff, 0, 30);
         ImGui::SliderFloat("Cohesion distance", &cohesion_coeff, 0, 30);
         ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 30);
+        // Choix entre 3 LOD's
+        ImGui::SliderInt("LOD", &lod, 0, 2);
         ImGui::End();
 
         // Calcul viewMatrix
@@ -362,14 +369,40 @@ int main()
         float m = 0.f;
         for (int i = 0; i < boids_number; i++)
         {
-            if (textures[i] == "Texture 1")
+            if (lod == 0)
             {
-                boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                if (textures[i] == "Texture 1")
+                {
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                }
+                else
+                {
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                }
             }
-            else
+            if (lod == 1)
             {
-                boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                if (textures[i] == "Texture 1")
+                {
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                }
+                else
+                {
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                }
             }
+            if (lod == 2)
+            {
+                if (textures[i] == "Texture 1")
+                {
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                }
+                else
+                {
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                }
+            }
+
             if (boidFalling(timeStart))
             {
                 boids[i].falling = true;
@@ -407,14 +440,11 @@ int main()
             {
                 arbre2 += 1.f;
             }
+            std::cout << "Type d'arbre sélectionné : " << selectedTree << std::endl;
             // }
 
             renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
         }
-
-        crossNuage();
-        // std::cout << "Type d'arbre Sapin : " << arbre1 / trees_number * 100 << "%" << std::endl;
-        // std::cout << "Type d'arbre Acacia : " << arbre2 / trees_number * 100 << "%" << std::endl;
 
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
 
@@ -442,56 +472,56 @@ int main()
                 if (detectCollision(characterPosition, treeTranslation[j], 2, 2))
                 {
                     freeflyCamera.handleCollision();
+                    // }
+                    if (upPressed)
+                    {
+                        collisionDetectedUp = true;
+                        if (ctx.key_is_pressed(GLFW_KEY_W))
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        collisionDetectedUp = false;
+                    }
+                    if (downPressed)
+                    {
+                        collisionDetectedDown = true;
+                        if (ctx.key_is_pressed(GLFW_KEY_S))
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        collisionDetectedDown = false;
+                    }
+                    if (leftPressed)
+                    {
+                        collisionDetectedLeft = true;
+                        if (ctx.key_is_pressed(GLFW_KEY_A))
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        collisionDetectedLeft = false;
+                    }
+                    if (rightPressed)
+                    {
+                        collisionDetectedRight = true;
+                        if (ctx.key_is_pressed(GLFW_KEY_D))
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        collisionDetectedRight = false;
+                    }
                 }
-                // if (upPressed)
-                // {
-                //     collisionDetectedUp = true;
-                //     if (ctx.key_is_pressed(GLFW_KEY_W))
-                //     {
-                //         return;
-                //     }
-                // }
-                // else
-                // {
-                //     collisionDetectedUp = false;
-                // }
-                // if (downPressed)
-                // {
-                //     collisionDetectedDown = true;
-                //     if (ctx.key_is_pressed(GLFW_KEY_S))
-                //     {
-                //         return;
-                //     }
-                // }
-                // else
-                // {
-                //     collisionDetectedDown = false;
-                // }
-                // if (leftPressed)
-                // {
-                //     collisionDetectedLeft = true;
-                //     if (ctx.key_is_pressed(GLFW_KEY_A))
-                //     {
-                //         return;
-                //     }
-                // }
-                // else
-                // {
-                //     collisionDetectedLeft = false;
-                // }
-                // if (rightPressed)
-                // {
-                //     collisionDetectedRight = true;
-                //     if (ctx.key_is_pressed(GLFW_KEY_D))
-                //     {
-                //         return;
-                //     }
-                // }
-                // else
-                // {
-                //     collisionDetectedRight = false;
-                // }
-                // }
                 else
                 {
                     collisionDetectedUp    = false;
