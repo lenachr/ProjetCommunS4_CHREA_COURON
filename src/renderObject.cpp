@@ -54,7 +54,7 @@ void bindTexture(std::vector<GLuint> textureID, int i, img::Image& texture)
 }
 
 // Function to draw each object with translation
-void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, float coefLight)
+void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, float coefLight, int typeLight)
 {
     // Calculate model matrix with translation
     glm::mat4 MVMatrix = viewMatrix * glm::translate(glm::mat4(1.0f), translation);
@@ -63,8 +63,17 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
     NormalMatrix       = glm::transpose(glm::inverse(MVMatrix));
 
     // Lumière ambiante
-    glm::vec3 lightPosition = glm::vec3(0, 80, 0);
+    glm::vec3 lightPosition = glm::vec3(50, 80, 0);
     lightPosition           = glm::vec3(viewMatrix * glm::vec4(lightPosition, 1.0f)); // Transformation de la position par la matrice de vue
+
+    glm::vec3 lightPosition02 = glm::vec3(-50, 20, 10);
+    lightPosition02           = glm::vec3(viewMatrix * glm::vec4(lightPosition02, 1.0f));
+
+    glm::vec3 lightPosition03 = glm::vec3(coefLight, coefLight, coefLight);
+    lightPosition03           = glm::vec3(viewMatrix * glm::vec4(lightPosition03, 1.0f));
+
+    glm::vec3 lightPosition04 = glm::vec3(50, 40, 0);
+    lightPosition04           = glm::vec3(viewMatrix * glm::vec4(lightPosition04, 1.0f));
 
     // Set shader uniforms
     glUniformMatrix4fv(ObjectProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
@@ -72,7 +81,7 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
     glUniformMatrix4fv(ObjectProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
     // glUseProgram(ObjectProgram.m_Program.id());
-    // glUniform3fv(ObjectProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
+    glUniform3fv(ObjectProgram.uLightPosPoint_vs, 1, glm::value_ptr(lightPosition04));
     // glUniform3f(ObjectProgram.uLightIntensity, 100.0f, 100.0f, 100.0f); // Intensité de la lumière blanche
     // glUniform3f(ObjectProgram.uKd, 10.f, 10.f, 10.f);                   // Coefficients de réflexion diffuse
     // glUniform3f(ObjectProgram.uKs, 10.f, 10.f, 10.f);                   // Coefficients de réflexion spéculaire
@@ -80,11 +89,14 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
 
     glUseProgram(ObjectProgram.m_Program.id());
     glUniform3fv(ObjectProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
-    glUniform3f(ObjectProgram.uLightIntensity, 1.0f, 1.f, 1.f); // Intensité de la lumière blanche
-    glUniform3f(ObjectProgram.uKd, 0.3f, 0.3f, 0.3f);           // Coefficients de réflexion diffuse
-    glUniform3f(ObjectProgram.uKs, 0.5f, 0.5f, 0.5f);           // Coefficients de réflexion spéculaire
-    glUniform1f(ObjectProgram.uShininess, 32.0f);               // Exposant de brillance
+    glUniform3fv(ObjectProgram.uLightPos02_vs, 1, glm::value_ptr(lightPosition02));
+    glUniform3fv(ObjectProgram.uLightPos03_vs, 1, glm::value_ptr(lightPosition03));
+    glUniform3f(ObjectProgram.uLightIntensity, 0.7f, 0.7f, 0.7f); // Intensité de la lumière blanche
+    glUniform3f(ObjectProgram.uKd, 0.3f, 0.3f, 0.3f);             // Coefficients de réflexion diffuse
+    glUniform3f(ObjectProgram.uKs, 0.3f, 0.3f, 0.3f);             // Coefficients de réflexion spéculaire
+    glUniform1f(ObjectProgram.uShininess, 32.0f);                 // Exposant de brillance
     glUniform1f(ObjectProgram.coefLight, coefLight);
+    glUniform1i(ObjectProgram.typeLight, typeLight);
 
     // Bind VAO and draw
     glBindVertexArray(vao);
@@ -92,10 +104,10 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
     glBindVertexArray(0);
 }
 
-void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID, float coefLight)
+void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID, float coefLight, int typeLight)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    drawObject(vao, vertexCount, translation, scale, rotation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, coefLight);
+    drawObject(vao, vertexCount, translation, scale, rotation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, coefLight, typeLight);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
