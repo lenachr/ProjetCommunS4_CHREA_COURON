@@ -54,7 +54,7 @@ void bindTexture(std::vector<GLuint> textureID, int i, img::Image& texture)
 }
 
 // Function to draw each object with translation
-void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram)
+void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, float coefLight)
 {
     // Calculate model matrix with translation
     glm::mat4 MVMatrix = viewMatrix * glm::translate(glm::mat4(1.0f), translation);
@@ -80,10 +80,11 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
 
     glUseProgram(ObjectProgram.m_Program.id());
     glUniform3fv(ObjectProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));
-    glUniform3f(ObjectProgram.uLightIntensity, 1.0f, 0.8f, 0.8f); // Intensité de la lumière blanche
-    glUniform3f(ObjectProgram.uKd, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion diffuse
-    glUniform3f(ObjectProgram.uKs, 0.5f, 0.5f, 0.5f);             // Coefficients de réflexion spéculaire
-    glUniform1f(ObjectProgram.uShininess, 32.0f);                 // Exposant de brillance
+    glUniform3f(ObjectProgram.uLightIntensity, 1.0f, 1.f, 1.f); // Intensité de la lumière blanche
+    glUniform3f(ObjectProgram.uKd, 0.3f, 0.3f, 0.3f);           // Coefficients de réflexion diffuse
+    glUniform3f(ObjectProgram.uKs, 0.5f, 0.5f, 0.5f);           // Coefficients de réflexion spéculaire
+    glUniform1f(ObjectProgram.uShininess, 32.0f);               // Exposant de brillance
+    glUniform1f(ObjectProgram.coefLight, coefLight);
 
     // Bind VAO and draw
     glBindVertexArray(vao);
@@ -91,10 +92,10 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
     glBindVertexArray(0);
 }
 
-void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID)
+void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID, float coefLight)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    drawObject(vao, vertexCount, translation, scale, rotation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram);
+    drawObject(vao, vertexCount, translation, scale, rotation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, coefLight);
     glBindTexture(GL_TEXTURE_2D, 0);
 }

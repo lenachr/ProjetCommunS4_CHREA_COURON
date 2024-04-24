@@ -29,13 +29,65 @@ bool collisionDetectedDown  = false;
 bool collisionDetectedLeft  = false;
 bool collisionDetectedRight = false;
 
+void collisions(const auto& ctx, FreeflyCamera& freeflyCamera, bool upPressed, bool downPressed, bool leftPressed, bool rightPressed, float move)
+{
+    if (upPressed)
+    {
+        collisionDetectedUp = true;
+        if (ctx->key_is_pressed(GLFW_KEY_W))
+        {
+            freeflyCamera.moveFront(-move);
+        }
+    }
+    else
+    {
+        collisionDetectedUp = false;
+    }
+    if (downPressed)
+    {
+        collisionDetectedDown = true;
+        if (ctx->key_is_pressed(GLFW_KEY_S))
+        {
+            freeflyCamera.moveFront(move);
+        }
+    }
+    else
+    {
+        collisionDetectedDown = false;
+    }
+    if (leftPressed)
+    {
+        collisionDetectedLeft = true;
+        if (ctx->key_is_pressed(GLFW_KEY_A))
+        {
+            freeflyCamera.moveLeft(-move);
+        }
+    }
+    else
+    {
+        collisionDetectedLeft = false;
+    }
+    if (rightPressed)
+    {
+        collisionDetectedRight = true;
+        if (ctx->key_is_pressed(GLFW_KEY_D))
+        {
+            freeflyCamera.moveLeft(move);
+        }
+    }
+    else
+    {
+        collisionDetectedRight = false;
+    }
+}
+
 float timeStart = static_cast<int>(glfwGetTime() * 1000.0);
 
 // Fonction pour détecter la collision entre le personnage et un arbre
-bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treePosition, float characterRadius, float treeRadius)
+bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treeTranslation, float characterRadius, float treeRadius)
 {
     // Calculer la distance entre le personnage et l'arbre
-    float distance = glm::length(characterPosition - treePosition);
+    float distance = glm::length(characterPosition - treeTranslation);
     // Si la distance est inférieure à la somme des rayons du personnage et de l'arbre, il y a collision
     return distance < (characterRadius + treeRadius);
 }
@@ -76,6 +128,7 @@ int main()
     float             cohesion_coeff   = 5.f;
     float             separation_coeff = 5.f;
     int               lod              = 1;
+    float             coefLight        = 0.5;
 
     std::string textures[100]; // Déclaration du tableau de textures
 
@@ -236,12 +289,10 @@ int main()
 
     // Initialiser les déplacements
     // Translation pour chaque objet
-    glm::vec3 benchTranslation(10.0f, 0.0f, -5.0f);
-    glm::vec3 boidTranslation(30.0f, 15.0f, 0.0f);
-    glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
+    glm::vec3 benchTranslation(-40.0f, 1.0f, -80.0f);
     glm::vec3 ballonsTranslation(-30.0f, -20.f, 50.f);
 
-    const int              nbHouses = 10; // Nombre de maisons à placer
+    const int              nbHouses = 3; // Nombre de maisons à placer
     std::vector<glm::vec3> houseTranslation;
     for (int i = 0; i < nbHouses; i++)
     {
@@ -251,6 +302,7 @@ int main()
     }
 
     std::vector<glm::vec3> treeTranslation;
+    std::vector<int>       selectedTree;
 
     for (int i = 0; i < trees_number; i++)
     {
@@ -259,6 +311,8 @@ int main()
         float randZTree = generateRandomPositionTree();
 
         treeTranslation.push_back(glm::vec3(randXTree, 0.0f, randZTree));
+
+        selectedTree.push_back(selectTree());
     }
 
     const int numRocks = 10;
@@ -286,11 +340,8 @@ int main()
             {
                 return;
             }
-            if (!collisionDetectedUp)
-            {
-                freeflyCamera.moveFront(0.5);
-                upPressed = true;
-            }
+            freeflyCamera.moveFront(0.5);
+            upPressed = true;
         }
         else
         {
@@ -385,6 +436,7 @@ int main()
         ImGui::SliderFloat("Separation distance", &separation_coeff, 0, 50);
         // Choix entre 3 LOD's
         ImGui::SliderInt("LOD", &lod, 0, 2);
+        ImGui::SliderFloat("Coefficient de lumière", &coefLight, 0, 1);
         ImGui::End();
 
         // Calcul viewMatrix
@@ -397,6 +449,15 @@ int main()
 
         MVMatrix = glm::rotate(MVMatrix, -1.57f, {0.f, 1.f, 0.f});
 
+        // Mise à jour position personnage
+        glm::vec3 cameraPosition    = freeflyCamera.getPosition();
+        glm::vec3 cameraFrontVector = freeflyCamera.getFrontVector();
+
+        glm::vec3 characterPosition = cameraPosition + characterDistance * cameraFrontVector;
+        // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
+
+        // Pour être légèrement au dessus du personnage
+        characterPosition.y -= characterPosition.y;
         // boucle qui affiche les boids
         float n = 0.f;
         float m = 0.f;
@@ -406,33 +467,33 @@ int main()
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight);
                 }
             }
             if (lod == 1)
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight);
                 }
             }
             if (lod == 2)
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight);
                 }
             }
 
@@ -448,40 +509,24 @@ int main()
                 }
             }
 
-            // std::cout << "Boid avec texture 1 : " << n << " Soit : " << n / 50.0f * 100 << "%" << std::endl;
-            // std::cout << "Boid avec texture 2 : " << m << " Soit : " << m / 50.0f * 100 << "%" << std::endl;
-            // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
             boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
         }
-
-        float arbre1 = 0.f;
-        float arbre2 = 0.f;
 
         // Boucle pour les arbres
         for (int i = 0; i < trees_number; ++i)
         {
-            int selectedTree = selectTree();
-
-            // Vérifier le type d'arbre sélectionné
-            // if (selectedTree != -1)
-            // {
-            if (selectedTree == 0)
+            // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
+            if (selectedTree[i] == 1)
             {
-                arbre1 += 1.f;
+                renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
             }
             else
             {
-                arbre2 += 1.f;
+                renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
             }
-            std::cout << "Type d'arbre sélectionné : " << selectedTree << std::endl;
-            // }
-
-            // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
-            renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
-            renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
         }
 
-        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
+        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1], coefLight);
 
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
         for (int i = 0; i < nbHouses; ++i)
@@ -490,75 +535,19 @@ int main()
             //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
             // );
             renderObject(
-                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
+                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight
             );
             // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
         }
 
-        // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
-        glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
-
-        // Pour être légèrement au dessus du personnage
-        characterPosition.y -= characterPosition.y;
-
-        // Collisions arbre
-        for (int i = 0; i < boids_number; i++)
+        // Vérifier la collision avec chaque maison
+        for (int i = 0; i < nbHouses; ++i)
         {
-            // Vérifier la collision avec chaque arbre
-            for (int j = 0; j < trees_number; ++j)
+            for (int j = 0; j < nbHouses; ++j)
             {
-                if (detectCollision(characterPosition, treeTranslation[j], 2, 2))
+                if (detectCollision(characterPosition, houseTranslation[j] + 3.f, 2, 12))
                 {
-                    freeflyCamera.handleCollision();
-                    // }
-                    if (upPressed)
-                    {
-                        collisionDetectedUp = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_W))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedUp = false;
-                    }
-                    if (downPressed)
-                    {
-                        collisionDetectedDown = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_S))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedDown = false;
-                    }
-                    if (leftPressed)
-                    {
-                        collisionDetectedLeft = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_A))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedLeft = false;
-                    }
-                    if (rightPressed)
-                    {
-                        collisionDetectedRight = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_D))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedRight = false;
-                    }
+                    collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
                 }
                 else
                 {
@@ -570,15 +559,48 @@ int main()
             }
         }
 
-        renderObject(vaoCarl, static_cast<GLsizei>(Carl.vertices.size()), characterPosition, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+        // Collisions arbre
+        for (int i = 0; i < trees_number; i++)
+        {
+            // Vérifier la collision avec chaque arbre
+            for (int j = 0; j < trees_number; ++j)
+            {
+                if (detectCollision(characterPosition, treeTranslation[j], 2, 3))
+                {
+                    collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.03f);
+                }
+                else
+                {
+                    collisionDetectedUp    = false;
+                    collisionDetectedDown  = false;
+                    collisionDetectedLeft  = false;
+                    collisionDetectedRight = false;
+                }
+            }
+        }
 
-        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5]);
+        float angle = atan2(cameraFrontVector.x, cameraFrontVector.z);
+        // Appliquer la rotation à la matrice de modèle-vue
+        MVMatrix = glm::rotate(MVMatrix, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+        renderObject(vaoCarl, static_cast<GLsizei>(Carl.vertices.size()), characterPosition, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
 
-        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
+        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5], coefLight);
 
-        // renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), benchTranslation, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2], coefLight);
 
-        renderObject(vaoBallons, static_cast<GLsizei>(ballons.vertices.size()), ballonsTranslation, glm::vec3{3.5f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+        if (detectCollision(characterPosition, benchTranslation, 2, 2))
+        {
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+        }
+        else
+        {
+            collisionDetectedUp    = false;
+            collisionDetectedDown  = false;
+            collisionDetectedLeft  = false;
+            collisionDetectedRight = false;
+        }
+
+        renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight);
 
         glBindVertexArray(0);
     };

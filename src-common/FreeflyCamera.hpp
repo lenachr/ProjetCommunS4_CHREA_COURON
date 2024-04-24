@@ -43,7 +43,7 @@ private:
 
 public:
     FreeflyCamera()
-        : m_Position(0.f, 6.f, 0.0f), m_Phi(PI), m_Theta(0.f)
+        : m_Position(-10.f, 6.f, -75.0f), m_Phi(PI), m_Theta(0.f)
     {
         computeDirectionVectors();
     }
