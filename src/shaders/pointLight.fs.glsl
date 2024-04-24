@@ -42,7 +42,7 @@ void main()
     vec4 texture = texture(uTexture, vTexCoords);
     // les paramètres de la lumière
     vec3 color = blinnPhong(vNormal_vs, vPosition_vs, uLightIntensity, uShininess, uKd, uKs); 
-    fFragColor = vec4(mix(texture.rgb, color, 0.8), texture.a);
+    fFragColor = vec4(mix(texture.rgb, color, 1), texture.a);
 
     // fFragColor= vec4 (color, 1.0f);
     // fFragColor = vec4(0.1f, 1.0f, 0.5f, 1.);

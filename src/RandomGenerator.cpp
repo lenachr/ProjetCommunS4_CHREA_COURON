@@ -305,10 +305,10 @@ int selectTree()
     std::vector<double> treeProbabilities     = {0.7, 0.3};
 
     // Affichage variance et esperance
-    double esperance = treeProbabilities[0] * 0 + treeProbabilities[1] * 1;
-    double variance  = treeProbabilities[0] * (0 - esperance) * (0 - esperance) + treeProbabilities[1] * (1 - esperance) * (1 - esperance);
-    std::cout << "Esperance : " << esperance << std::endl;
-    std::cout << "Variance : " << variance << std::endl;
+    // double esperance = treeProbabilities[0] * 0 + treeProbabilities[1] * 1;
+    // double variance  = treeProbabilities[0] * (0 - esperance) * (0 - esperance) + treeProbabilities[1] * (1 - esperance) * (1 - esperance);
+    // std::cout << "Esperance : " << esperance << std::endl;
+    // std::cout << "Variance : " << variance << std::endl;
 
     for (int i = 0; i < treeProbabilities.size(); ++i)
     {

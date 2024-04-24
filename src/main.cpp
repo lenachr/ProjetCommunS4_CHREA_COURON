@@ -29,13 +29,65 @@ bool collisionDetectedDown  = false;
 bool collisionDetectedLeft  = false;
 bool collisionDetectedRight = false;
 
+void collisions(const auto& ctx, FreeflyCamera& freeflyCamera, bool upPressed, bool downPressed, bool leftPressed, bool rightPressed, float move)
+{
+    if (upPressed)
+    {
+        collisionDetectedUp = true;
+        if (ctx->key_is_pressed(GLFW_KEY_W))
+        {
+            freeflyCamera.moveFront(-move);
+        }
+    }
+    else
+    {
+        collisionDetectedUp = false;
+    }
+    if (downPressed)
+    {
+        collisionDetectedDown = true;
+        if (ctx->key_is_pressed(GLFW_KEY_S))
+        {
+            freeflyCamera.moveFront(move);
+        }
+    }
+    else
+    {
+        collisionDetectedDown = false;
+    }
+    if (leftPressed)
+    {
+        collisionDetectedLeft = true;
+        if (ctx->key_is_pressed(GLFW_KEY_A))
+        {
+            freeflyCamera.moveLeft(-move);
+        }
+    }
+    else
+    {
+        collisionDetectedLeft = false;
+    }
+    if (rightPressed)
+    {
+        collisionDetectedRight = true;
+        if (ctx->key_is_pressed(GLFW_KEY_D))
+        {
+            freeflyCamera.moveLeft(move);
+        }
+    }
+    else
+    {
+        collisionDetectedRight = false;
+    }
+}
+
 float timeStart = static_cast<int>(glfwGetTime() * 1000.0);
 
 // Fonction pour détecter la collision entre le personnage et un arbre
-bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treePosition, float characterRadius, float treeRadius)
+bool detectCollision(const glm::vec3& characterPosition, const glm::vec3& treeTranslation, float characterRadius, float treeRadius)
 {
     // Calculer la distance entre le personnage et l'arbre
-    float distance = glm::length(characterPosition - treePosition);
+    float distance = glm::length(characterPosition - treeTranslation);
     // Si la distance est inférieure à la somme des rayons du personnage et de l'arbre, il y a collision
     return distance < (characterRadius + treeRadius);
 }
@@ -230,11 +282,9 @@ int main()
 
     // Initialiser les déplacements
     // Translation pour chaque objet
-    glm::vec3 benchTranslation(10.0f, 0.0f, -5.0f);
-    glm::vec3 boidTranslation(30.0f, 15.0f, 0.0f);
-    glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
+    glm::vec3 benchTranslation(-40.0f, 1.0f, -80.0f);
 
-    const int              nbHouses = 10; // Nombre de maisons à placer
+    const int              nbHouses = 3; // Nombre de maisons à placer
     std::vector<glm::vec3> houseTranslation;
     for (int i = 0; i < nbHouses; i++)
     {
@@ -244,6 +294,7 @@ int main()
     }
 
     std::vector<glm::vec3> treeTranslation;
+    std::vector<int>       selectedTree;
 
     for (int i = 0; i < trees_number; i++)
     {
@@ -252,6 +303,8 @@ int main()
         float randZTree = generateRandomPositionTree();
 
         treeTranslation.push_back(glm::vec3(randXTree, 0.0f, randZTree));
+
+        selectedTree.push_back(selectTree());
     }
 
     const int numRocks = 10;
@@ -279,11 +332,8 @@ int main()
             {
                 return;
             }
-            if (!collisionDetectedUp)
-            {
-                freeflyCamera.moveFront(0.5);
-                upPressed = true;
-            }
+            freeflyCamera.moveFront(0.5);
+            upPressed = true;
         }
         else
         {
@@ -380,6 +430,12 @@ int main()
         ImGui::SliderInt("LOD", &lod, 0, 2);
         ImGui::End();
 
+        // Mise à jour position personnage
+        glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
+
+        // Pour être légèrement au dessus du personnage
+        characterPosition.y -= characterPosition.y;
+
         // Calcul viewMatrix
 
         glm::mat4 viewMatrix   = freeflyCamera.getViewMatrix();
@@ -441,37 +497,21 @@ int main()
                 }
             }
 
-            // std::cout << "Boid avec texture 1 : " << n << " Soit : " << n / 50.0f * 100 << "%" << std::endl;
-            // std::cout << "Boid avec texture 2 : " << m << " Soit : " << m / 50.0f * 100 << "%" << std::endl;
-            // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
             boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
         }
-
-        float arbre1 = 0.f;
-        float arbre2 = 0.f;
 
         // Boucle pour les arbres
         for (int i = 0; i < trees_number; ++i)
         {
-            int selectedTree = selectTree();
-
-            // Vérifier le type d'arbre sélectionné
-            // if (selectedTree != -1)
-            // {
-            if (selectedTree == 0)
+            // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
+            if (selectedTree[i] == 1)
             {
-                arbre1 += 1.f;
+                renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
             }
             else
             {
-                arbre2 += 1.f;
+                renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
             }
-            std::cout << "Type d'arbre sélectionné : " << selectedTree << std::endl;
-            // }
-
-            // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
-            renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
-            renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
         }
 
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
@@ -488,70 +528,34 @@ int main()
             // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
         }
 
-        // glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
-        glm::vec3 characterPosition = freeflyCamera.getPosition() + characterDistance * freeflyCamera.getFrontVector();
-
-        // Pour être légèrement au dessus du personnage
-        characterPosition.y -= characterPosition.y;
+        // Vérifier la collision avec chaque maison
+        for (int i = 0; i < nbHouses; ++i)
+        {
+            for (int j = 0; j < nbHouses; ++j)
+            {
+                if (detectCollision(characterPosition, houseTranslation[j] + 3.f, 2, 12))
+                {
+                    collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+                }
+                else
+                {
+                    collisionDetectedUp    = false;
+                    collisionDetectedDown  = false;
+                    collisionDetectedLeft  = false;
+                    collisionDetectedRight = false;
+                }
+            }
+        }
 
         // Collisions arbre
-        for (int i = 0; i < boids_number; i++)
+        for (int i = 0; i < trees_number; i++)
         {
             // Vérifier la collision avec chaque arbre
             for (int j = 0; j < trees_number; ++j)
             {
-                if (detectCollision(characterPosition, treeTranslation[j], 2, 2))
+                if (detectCollision(characterPosition, treeTranslation[j], 2, 3))
                 {
-                    freeflyCamera.handleCollision();
-                    // }
-                    if (upPressed)
-                    {
-                        collisionDetectedUp = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_W))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedUp = false;
-                    }
-                    if (downPressed)
-                    {
-                        collisionDetectedDown = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_S))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedDown = false;
-                    }
-                    if (leftPressed)
-                    {
-                        collisionDetectedLeft = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_A))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedLeft = false;
-                    }
-                    if (rightPressed)
-                    {
-                        collisionDetectedRight = true;
-                        if (ctx.key_is_pressed(GLFW_KEY_D))
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        collisionDetectedRight = false;
-                    }
+                    collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.03f);
                 }
                 else
                 {
@@ -567,7 +571,19 @@ int main()
 
         renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5]);
 
-        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
+        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), benchTranslation, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
+
+        if (detectCollision(characterPosition, benchTranslation, 2, 2))
+        {
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+        }
+        else
+        {
+            collisionDetectedUp    = false;
+            collisionDetectedDown  = false;
+            collisionDetectedLeft  = false;
+            collisionDetectedRight = false;
+        }
 
         // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
 
