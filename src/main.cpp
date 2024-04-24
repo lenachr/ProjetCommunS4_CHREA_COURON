@@ -229,28 +229,13 @@ int main()
     glm::vec3 characterTranslation(0.0f, 0.0f, -10.0f);
 
     const int              nbHouses = 10; // Nombre de maisons à placer
-    float                  a        = 0.0f;
-    float                  b        = 0.0f;
     std::vector<glm::vec3> houseTranslation;
     for (int i = 0; i < nbHouses; i++)
     {
         double houseTranslationX = placeHouses();
         double houseTranslationZ = placeHouses();
-        if (houseTranslationX < 0.0f && houseTranslationX > -20.0f && houseTranslationZ < 0.0f && houseTranslationZ > -20.0f)
-        {
-            a++;
-        }
-        else
-        {
-            b++;
-        }
-
-        std::cout << "Maison " << i + 1 << " : Position -> " << houseTranslationX << ", " << houseTranslationZ << std::endl;
         houseTranslation.push_back(glm::vec3(houseTranslationX, 0.0f, houseTranslationZ));
     }
-
-    std::cout << "Pourcentage de maison au centre : " << a / 1000 * 100 << std::endl;
-    std::cout << "Pourcentage de maison aux bords : " << b / 1000 * 100 << std::endl;
 
     std::vector<glm::vec3> treeTranslation;
 
@@ -441,13 +426,18 @@ int main()
             boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
         }
 
+        float arbre1 = 0.f;
+        float arbre2 = 0.f;
+
         // Boucle pour les arbres
         for (int i = 0; i < trees_number; ++i)
         {
-            // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
-            renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
-            renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+            renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
         }
+
+        crossNuage();
+        // std::cout << "Type d'arbre Sapin : " << arbre1 / trees_number * 100 << "%" << std::endl;
+        // std::cout << "Type d'arbre Acacia : " << arbre2 / trees_number * 100 << "%" << std::endl;
 
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
 
