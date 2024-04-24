@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include "boid.hpp"
+#include "glm/fwd.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "ObjectProgram.hpp"
 #include "RandomGenerator.hpp"
@@ -76,10 +77,10 @@ int main()
     float             separation_coeff = 2.f;
     int               lod              = 1;
 
-    std::string textures[600]; // Déclaration du tableau de textures
+    std::string textures[100]; // Déclaration du tableau de textures
 
     // Remplissage du tableau avec les sorties de chooseBoidTexture()
-    for (int i = 0; i < 600; ++i)
+    for (int i = 0; i < 100; ++i)
     {
         textures[i] = chooseBoidTexture();
     }
@@ -87,7 +88,7 @@ int main()
     float bas  = 0.0f;
     float haut = 0.0f;
     // for (int i = 0; i < 50; i++)
-    for (int i = 0; i < 600; i++)
+    for (int i = 0; i < 100; i++)
     {
         double verticalSpeed = chooseVerticalBoidSpeed();
         if (verticalSpeed < 0)
@@ -250,7 +251,7 @@ int main()
 
         float randZTree = generateRandomPositionTree();
 
-        treeTranslation.push_back(glm::vec3(randXTree, 2.0f, randZTree));
+        treeTranslation.push_back(glm::vec3(randXTree, 0.0f, randZTree));
     }
 
     const int numRocks = 10;
@@ -259,7 +260,7 @@ int main()
         double color = chooseRockColor();
         // std::cout << "Rocher " << i + 1 << " : Couleur -> " << color << std::endl;
     }
-    constexpr float characterDistance = 12.0f;
+    constexpr float characterDistance = 10.0f;
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -389,19 +390,6 @@ int main()
 
         MVMatrix = glm::rotate(MVMatrix, -1.57f, {0.f, 1.f, 0.f});
 
-        // Modèles 3D
-        glm::mat4 MVMatrix_3D = viewMatrix * glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, -5.f));
-        MVMatrix_3D           = glm::scale(MVMatrix, glm::vec3{5.f});
-
-        // glUniform1f(uAlphaLocation, transparency);
-        glUniformMatrix4fv(ObjectProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-        glUniformMatrix4fv(ObjectProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-        glUniformMatrix4fv(ObjectProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-
-        // 3D
-        glUniformMatrix4fv(ObjectProgram.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
-        glUniformMatrix4fv(ObjectProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-
         // boucle qui affiche les boids
         float n = 0.f;
         float m = 0.f;
@@ -411,33 +399,33 @@ int main()
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoidCube, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
                 }
             }
             if (lod == 1)
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 90.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
                 }
             }
             if (lod == 2)
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
+                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10]);
                 }
             }
 
@@ -481,10 +469,12 @@ int main()
             std::cout << "Type d'arbre sélectionné : " << selectedTree << std::endl;
             // }
 
-            renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
+            // renderObject(vaoTree, static_cast<GLsizei>(tree.size()), treeTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[0]);
+            renderObject(vaoTree1, static_cast<GLsizei>(tree1.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+            renderObject(vaoTree2, static_cast<GLsizei>(tree2.vertices.size()), treeTranslation[i], glm::vec3{18.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
         }
 
-        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
+        renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1]);
 
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
         for (int i = 0; i < nbHouses; ++i)
@@ -493,7 +483,7 @@ int main()
             //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
             // );
             renderObject(
-                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
+                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]
             );
             // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
         }
@@ -573,11 +563,11 @@ int main()
             }
         }
 
-        renderObject(vaoCarl, static_cast<GLsizei>(Carl.vertices.size()), characterPosition, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
+        renderObject(vaoCarl, static_cast<GLsizei>(Carl.vertices.size()), characterPosition, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11]);
 
-        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5]);
+        renderObject(vaoFloor, static_cast<GLsizei>(floor.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[5]);
 
-        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
+        renderObject(vaoBench, static_cast<GLsizei>(bench.size()), glm::vec3{0}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[2]);
 
         // renderObject(vaoBoid, static_cast<GLsizei>(boid.size()), boidTranslation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9]);
 
@@ -598,5 +588,6 @@ int main()
     glDeleteVertexArrays(1, &vaoFloor);
     glDeleteVertexArrays(1, &vaoCharacter);
     glDeleteVertexArrays(1, &vaoTree);
+
     glDeleteTextures(static_cast<GLsizei>(textureID.size()), textureID.data());
 }

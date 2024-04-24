@@ -54,10 +54,12 @@ void bindTexture(std::vector<GLuint> textureID, int i, img::Image& texture)
 }
 
 // Function to draw each object with translation
-void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram)
+void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram)
 {
     // Calculate model matrix with translation
     glm::mat4 MVMatrix = viewMatrix * glm::translate(glm::mat4(1.0f), translation);
+    MVMatrix           = glm::rotate(MVMatrix, rotation, {0.f, 1.f, 0.f});
+    MVMatrix           = glm::scale(MVMatrix, scale);
     NormalMatrix       = glm::transpose(glm::inverse(MVMatrix));
 
     // Lumière ambiante
@@ -89,10 +91,10 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat
     glBindVertexArray(0);
 }
 
-void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID)
+void renderObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
-    drawObject(vao, vertexCount, translation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram);
+    drawObject(vao, vertexCount, translation, scale, rotation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
