@@ -304,7 +304,7 @@ int main()
     glm::vec3 rocksTranslation3(40.f, 0.f, -20.f);
     glm::vec3 rocksTranslation4(-10.f, 0.f, 90.f);
 
-    const int              nbHouses = 2; // Nombre de maisons à placer
+    const int              nbHouses = 10; // Nombre de maisons à placer
     std::vector<glm::vec3> houseTranslation;
     for (int i = 0; i < nbHouses; i++)
     {
@@ -542,19 +542,21 @@ int main()
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1], coefLight, typeLight);
 
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
-        // for (int i = 0; i < nbHouses; ++i)
-        // {
-        // renderObject(
-        //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
-        // );
-        renderObject(
-            vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[1], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
-        );
-        renderObject(
-            vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), glm::vec3{200.f}, glm::vec3{0.1f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
-        );
-        // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
-        // }
+        for (int i = 0; i < nbHouses; ++i)
+        {
+            // renderObject(
+            // vaoHouse3D, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+            // );
+            // vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[1], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
+
+            renderObject(
+                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
+            );
+            // renderObject(
+            //     vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), glm::vec3{200.f}, glm::vec3{0.1f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
+            // );
+            // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
+        }
 
         // Vérifier la collision avec chaque maison
         for (int i = 0; i < nbHouses; ++i)
@@ -618,7 +620,7 @@ int main()
 
         if (detectCollision(characterPosition, ballonsTranslation, 2, 18))
         {
-            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.5f);
         }
         else
         {
@@ -628,9 +630,9 @@ int main()
             collisionDetectedRight = false;
         }
 
-        if (detectCollision(characterPosition, rocksTranslation, 2, 10))
+        if (detectCollision(characterPosition, rocksTranslation, 2, 7))
         {
-            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.5f);
         }
         else
         {
@@ -640,9 +642,9 @@ int main()
             collisionDetectedRight = false;
         }
 
-        if (detectCollision(characterPosition, rocksTranslation2, 2, 10))
+        if (detectCollision(characterPosition, rocksTranslation2, 2, 7))
         {
-            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.5f);
         }
         else
         {
@@ -652,9 +654,9 @@ int main()
             collisionDetectedRight = false;
         }
 
-        if (detectCollision(characterPosition, rocksTranslation3, 2, 10))
+        if (detectCollision(characterPosition, rocksTranslation3, 2, 7))
         {
-            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.5f);
         }
         else
         {
@@ -664,9 +666,9 @@ int main()
             collisionDetectedRight = false;
         }
 
-        if (detectCollision(characterPosition, rocksTranslation4, 2, 10))
+        if (detectCollision(characterPosition, rocksTranslation4, 2, 7))
         {
-            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.5f);
         }
         else
         {

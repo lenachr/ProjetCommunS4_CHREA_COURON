@@ -313,7 +313,7 @@ int selectTree()
     for (int i = 0; i < treeProbabilities.size(); ++i)
     {
         cumulativeProbability += treeProbabilities[i];
-        if (random < cumulativeProbability)
+        if (random <= cumulativeProbability)
         {
             return i;
         }
