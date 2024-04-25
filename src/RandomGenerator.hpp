@@ -19,7 +19,7 @@ bool boidFalling(float timeStart);
 std::string chooseBoidTexture();
 // Choix de la couleur de la pierre selon une distribution normale
 double chooseRockColor();
-// Fonction pour choisir la vitesse verticale aléatoire du boud avec une distribution de Laplace
+// Fonction pour choisir la vitesse verticale aléatoire du boid avec une distribution de Laplace
 double chooseVerticalBoidSpeed();
 // Fonction pour placer les maisons sur la carte, loi de distribution bimodale
 double placeHouses();

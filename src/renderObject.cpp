@@ -56,7 +56,7 @@ void bindTexture(std::vector<GLuint> textureID, int i, img::Image& texture)
 // Function to draw each object with translation
 void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, float coefLight, int typeLight)
 {
-    // Calculate model matrix with translation
+    // Calcul model matrix avec matrices translation, rotation et scale
     glm::mat4 MVMatrix = viewMatrix * glm::translate(glm::mat4(1.0f), translation);
     MVMatrix           = glm::rotate(MVMatrix, rotation, {1.f, 1.f, 0.f});
     MVMatrix           = glm::scale(MVMatrix, scale);
@@ -80,12 +80,7 @@ void drawObject(GLuint vao, GLsizei vertexCount, glm::vec3 translation, glm::vec
     glUniformMatrix4fv(ObjectProgram.uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
     glUniformMatrix4fv(ObjectProgram.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
 
-    // glUseProgram(ObjectProgram.m_Program.id());
     glUniform3fv(ObjectProgram.uLightPosPoint_vs, 1, glm::value_ptr(lightPosition04));
-    // glUniform3f(ObjectProgram.uLightIntensity, 100.0f, 100.0f, 100.0f); // Intensité de la lumière blanche
-    // glUniform3f(ObjectProgram.uKd, 10.f, 10.f, 10.f);                   // Coefficients de réflexion diffuse
-    // glUniform3f(ObjectProgram.uKs, 10.f, 10.f, 10.f);                   // Coefficients de réflexion spéculaire
-    // glUniform1f(ObjectProgram.uShininess, 32.0f);                       // Exposant de brillance
 
     glUseProgram(ObjectProgram.m_Program.id());
     glUniform3fv(ObjectProgram.uLightPos_vs, 1, glm::value_ptr(lightPosition));

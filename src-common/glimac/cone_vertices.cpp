@@ -8,23 +8,6 @@ namespace glimac {
 
 std::vector<ShapeVertex> cone_vertices(float height, float radius, size_t discLat, size_t discHeight) // NOLINT(bugprone-easily-swappable-parameters, readability-inconsistent-declaration-parameter-name)
 {
-    // Equation paramétrique en (r, phi, h) du cône
-    // avec r >= 0, -PI / 2 <= theta <= PI / 2, 0 <= h <= height
-    //
-    // x(r, phi, h) = r (height - h) sin(phi) / height
-    // y(r, phi, h) = h
-    // z(r, phi, h) = r (height - h) cos(phi) / height
-    //
-    // Discrétisation:
-    // phi = 2PI / discLat, h = height / discHeight
-    //
-    // x(r, i, j) = r * (height - j * h) * sin(i * phi) / height
-    // y(r, i, j) = j * h
-    // z(r, i, j) = r * (height - j * h) * cos(i * phi) / height
-    //
-    // Attention ! dans cette implantation on duplique beaucoup de sommets. Une meilleur stratégie est de passer
-    // par un Index Buffer Object, que nous verrons dans les prochains TDs
-
     const auto fDiscLat    = static_cast<float>(discLat);
     const auto fDiscHeight = static_cast<float>(discHeight);
 

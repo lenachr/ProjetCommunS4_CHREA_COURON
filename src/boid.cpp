@@ -1,19 +1,17 @@
 #include "boid.hpp"
 
+// Dessin des boids
 void Boid::draw(GLuint vao, GLsizei vertexCount, glm::vec3 scale, float rotation, glm::mat4 viewMatrix, glm::mat4 ProjMatrix, glm::mat4& NormalMatrix, ObjectProgram& ObjectProgram, GLuint textureID, float coefLight, int typeLight)
 {
-    // ctx->triangle(
-    // p6::Point2D{-0.05f, 0.035f}, p6::Point2D{-0.05f, -0.035f}, p6::Point2D{0.05f, 0.f}, p6::Center{position}, p6::Rotation{speed}
-    // );
     renderObject(vao, vertexCount, position, scale, rotation, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID, coefLight, typeLight);
 }
 
-// destructeur
+// Destructeur
 Boid::~Boid()
 {
 }
 
-// Methode qui gère les mouvements
+// Methode qui gère les mouvements et les collisions du cube
 void Boid::apply_speed(std::vector<Boid>& allBoids)
 {
     if (falling == true)
@@ -26,66 +24,53 @@ void Boid::apply_speed(std::vector<Boid>& allBoids)
         position.y += speed.y;
         position.z += speed.z;
 
-        for (size_t i = 0; i < allBoids.size(); i++)
+        for (auto& Boid : allBoids)
         {
             // Si contact mur haut
-            if (allBoids[i].position.y > 100.f) //-1.1f
+            if (Boid.position.y > 100.f)
             {
-                allBoids[i].position.y = 30.f;
+                Boid.position.y = 30.f;
             }
             // Si contact mur bas
-            if (allBoids[i].position.y < 30.0f) // 0.75f
+            if (Boid.position.y < 30.0f)
             {
-                // speed.x = 0;
-                // speed.y = 0;
-                // speed.z = 0;
-                allBoids[i].position.y = 99.f;
+                Boid.position.y = 99.f;
             }
 
             // Si contact mur gauche
-            if (allBoids[i].position.x < -95.f)
+            if (Boid.position.x < -95.f)
             {
-                allBoids[i].position.x = 95.f;
-                // speed.x = 0;
-                // speed.y = 0;
-                // speed.z = 0;
+                Boid.position.x = 95.f;
             }
 
-            // // Si contact mur droit
-            if (allBoids[i].position.x > 95.f)
+            // Si contact mur droit
+            if (Boid.position.x > 95.f)
             {
-                // speed.x = 0;
-                // speed.y = 0;
-                // speed.z = 0;
-                allBoids[i].position.x = -95.f;
+                Boid.position.x = -95.f;
             }
 
-            // // Si contact mur profondeur gauche
-            if (allBoids[i].position.z < -95.f) //-1.1f
+            // Si contact mur profondeur gauche
+            if (Boid.position.z < -95.f) //-1.1f
             {
-                allBoids[i].position.z = 95.f;
-                // speed.x = 0;
-                // speed.y = 0;
-                // speed.z = 0;
+                Boid.position.z = 95.f;
             }
 
-            // // // Si contact mur profondeur droit
-            if (allBoids[i].position.z > 95.f)
+            // Si contact mur profondeur droit
+            if (Boid.position.z > 95.f)
             {
-                allBoids[i].position.z = -95.f;
-                // speed.x = 0;
-                // speed.y = 0;
-                // speed.z = 0;
+                Boid.position.z = -95.f;
             }
         }
     }
 }
 
+// Calcule la distance qui sépare 2 boids
 float Boid::distance(const Boid& boid1, const Boid& boid2)
 {
     return std::sqrt((boid2.position.x - boid1.position.x) * (boid2.position.x - boid1.position.x) + (boid2.position.y - boid1.position.y) * (boid2.position.y - boid1.position.y) + (boid2.position.z - boid1.position.z) * (boid2.position.z - boid1.position.z));
 }
 
+// Règle d'alignement
 void Boid::alignement(const std::vector<Boid>& allBoids, double alignmentDistance)
 {
     glm::vec3 averageAngle(0.0f, 0.0f, 0.0f);
@@ -115,6 +100,7 @@ void Boid::alignement(const std::vector<Boid>& allBoids, double alignmentDistanc
     }
 }
 
+// Règle de cohésion
 void Boid::cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, double cohesionFactor)
 {
     glm::vec3 centerOfMass(0.0f, 0.0f, 0.0f);
@@ -146,6 +132,7 @@ void Boid::cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, 
     }
 }
 
+// Règle de séparation
 void Boid::separation(const std::vector<Boid>& allBoids, float separationDistance, float separationFactor)
 {
     glm::vec3 separation(0.0f, 0.0f, 0.0f);
@@ -183,6 +170,7 @@ void Boid::separation(const std::vector<Boid>& allBoids, float separationDistanc
     }
 }
 
+// Rendu des boids ajouté dans le main.cpp
 void Boid::update(std::vector<Boid>& allBoids, float alignement_coeff, float cohesion_coeff, float separation_coeff)
 {
     apply_speed(allBoids);

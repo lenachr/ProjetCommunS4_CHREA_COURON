@@ -2,14 +2,6 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-// struct ShapeVertex {
-//     glm::vec3 position;
-//     glm::vec3 normal;
-//     glm::vec2 texCoords;
-// };
-
-// std::vector<ShapeVertex> cube_vertices(float size)
-// {
 namespace glimac {
 std::vector<ShapeVertex> pyramid_vertices(float sizeX, float sizeY, float sizeZ)
 {

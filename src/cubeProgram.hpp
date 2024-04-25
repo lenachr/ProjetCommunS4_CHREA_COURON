@@ -12,8 +12,6 @@ struct CubeProgram {
 
     CubeProgram()
         : m_Program(p6::load_shader("src/shaders/3D.vs.glsl", "src/shaders/normals.fs.glsl"))
-    // : m_Program(p6::load_shader("src/shaders/3D.vs.glsl", "src/shaders/pointLight.fs.glsl"))
-
     {
         uMVPMatrix    = glGetUniformLocation(m_Program.id(), "uMVPMatrix");
         uMVMatrix     = glGetUniformLocation(m_Program.id(), "uMVMatrix");

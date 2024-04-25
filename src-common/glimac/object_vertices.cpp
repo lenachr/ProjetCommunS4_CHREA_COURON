@@ -9,6 +9,7 @@
 
 namespace glimac {
 
+// Arbre modélisé en OpenGL remplacé par un modèle Blender
 std::vector<ShapeVertex> tree_vertices(float size)
 {
     // Vertices du rectangle
@@ -20,8 +21,6 @@ std::vector<ShapeVertex> tree_vertices(float size)
     // Déplacer la sphère vers le haut pour la placer au-dessus du rectangle
     for (auto& vertex : sphere)
     {
-        // vertex.position.x = -vertex.position.x;
-        // vertex.position.y = -vertex.position.y;
         vertex.position.z = -vertex.position.z;
         vertex.position.y += 9.5f * size; // décalage vertical pour placer la sphère au-dessus du rectangle
     }
@@ -38,7 +37,8 @@ std::vector<ShapeVertex> tree_vertices(float size)
     return rectangle;
 }
 
-std::vector<ShapeVertex> bench_vertices(float size) // NOLINT(bugprone-easily-swappable-parameters, readability-inconsistent-declaration-parameter-name)
+// Banc modélisé en OpenGL
+std::vector<ShapeVertex> bench_vertices(float size)
 {
     // Planche assise du banc
     std::vector<ShapeVertex> sit = cube_vertices(size * 3, size / 4, size);
@@ -118,6 +118,7 @@ std::vector<ShapeVertex> bench_vertices(float size) // NOLINT(bugprone-easily-sw
     return bench;
 }
 
+// Boids modélisé en OpenGL
 std::vector<ShapeVertex> boids_vertices(float size)
 {
     // partie haute
@@ -217,16 +218,17 @@ std::vector<ShapeVertex> boids_vertices(float size)
     return boid;
 };
 
+// Personnage modélisé en OpenGL remplacé par un modèle Blender
 std::vector<ShapeVertex> character_vertices(float size)
 {
-    // Tête
+    // tête
     std::vector<ShapeVertex> head = sphere_vertices(size / 3.f, 32, 16);
     for (auto& vertex : head)
     {
         vertex.position.y += 0.8f * size; // décalage vertical pour placer la sphère au-dessus du rectangle
     }
 
-    // Corps
+    // corps
     std::vector<ShapeVertex> body = cone_vertices(size, size / 2.f, 32, 16);
     for (auto& vertex : head)
     {
@@ -277,6 +279,7 @@ std::vector<ShapeVertex> character_vertices(float size)
     return character;
 };
 
+// Maison modélisée en OpenGL remplacée par un modèle Blender
 std::vector<ShapeVertex> house_vertices(float size)
 {
     // base
@@ -306,6 +309,7 @@ std::vector<ShapeVertex> house_vertices(float size)
     return house;
 };
 
+// Sol du cube modélisé en OpenGL
 std::vector<ShapeVertex> floor_vertices(float size)
 {
     // base

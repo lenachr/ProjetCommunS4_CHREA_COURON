@@ -6,25 +6,8 @@
 
 namespace glimac {
 
-std::vector<ShapeVertex> sphere_vertices(float radius, size_t discLat, size_t discLong) // NOLINT(bugprone-easily-swappable-parameters, readability-inconsistent-declaration-parameter-name)
+std::vector<ShapeVertex> sphere_vertices(float radius, size_t discLat, size_t discLong)
 {
-    // Équation paramétrique en (r, phi, theta) de la sphère
-    // avec r >= 0, -PI / 2 <= theta <= PI / 2, 0 <= phi <= 2PI
-    //
-    // x(r, phi, theta) = r * sin(phi) * cos(theta)
-    // y(r, phi, theta) = r * sin(theta) *
-    // z(r, phi, theta) = r * cos(phi) * cos(theta)
-    //
-    // Discrétisation:
-    // phi = 2PI / discLat, theta = PI / discLong
-    //
-    // x(r, i, j) = r * sin(i * phi) * cos(-PI / 2 + j * theta)
-    // y(r, i, j) = r * sin(-PI / 2 + j * theta)
-    // z(r, i, j) = r * cos(i * phi) * cos(-PI / 2 + j * theta)
-    //
-    // Attention ! dans cette implantation on duplique beaucoup de sommets. Une meilleur stratégie est de passer
-    // par un Index Buffer Object, que nous verrons dans les prochains TDs
-
     const auto fDiscLat  = static_cast<float>(discLat);
     const auto fDiscLong = static_cast<float>(discLong);
 
