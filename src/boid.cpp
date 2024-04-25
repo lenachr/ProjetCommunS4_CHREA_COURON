@@ -43,36 +43,36 @@ void Boid::apply_speed(std::vector<Boid>& allBoids)
             }
 
             // Si contact mur gauche
-            if (allBoids[i].position.x < -45.f)
+            if (allBoids[i].position.x < -95.f)
             {
-                allBoids[i].position.x = 45.f;
+                allBoids[i].position.x = 95.f;
                 // speed.x = 0;
                 // speed.y = 0;
                 // speed.z = 0;
             }
 
             // // Si contact mur droit
-            if (allBoids[i].position.x > 45.f)
+            if (allBoids[i].position.x > 95.f)
             {
                 // speed.x = 0;
                 // speed.y = 0;
                 // speed.z = 0;
-                allBoids[i].position.x = -45.f;
+                allBoids[i].position.x = -95.f;
             }
 
             // // Si contact mur profondeur gauche
-            if (allBoids[i].position.z < -90.f) //-1.1f
+            if (allBoids[i].position.z < -95.f) //-1.1f
             {
-                allBoids[i].position.z = 90.f;
+                allBoids[i].position.z = 95.f;
                 // speed.x = 0;
                 // speed.y = 0;
                 // speed.z = 0;
             }
 
             // // // Si contact mur profondeur droit
-            if (allBoids[i].position.z > 90.f)
+            if (allBoids[i].position.z > 95.f)
             {
-                allBoids[i].position.z = -90.f;
+                allBoids[i].position.z = -95.f;
                 // speed.x = 0;
                 // speed.y = 0;
                 // speed.z = 0;

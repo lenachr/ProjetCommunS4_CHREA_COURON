@@ -127,7 +127,7 @@ int main()
     float             alignement_coeff = 5.f;
     float             cohesion_coeff   = 5.f;
     float             separation_coeff = 5.f;
-    int               lod              = 1;
+    int               lod              = 2;
     float             coefLight        = 0.5;
     int               typeLight        = 0;
 
@@ -155,9 +155,10 @@ int main()
         }
         boids.push_back(Boid{
             // /*position = */ glm::vec3{p6::random::number(-100.f, 100.0f), p6::random::number(70.f, 100.f), p6::random::number(-100.f, 100.0f)},
-            /*position = */ glm::vec3{p6::random::number(-45.f, 45.0f), p6::random::number(50.f, 90.f), p6::random::number(-90.f, 90.0f)},
+            /*position = */ glm::vec3{p6::random::number(-95.f, 95.0f), p6::random::number(60.f, 90.f), p6::random::number(-90.f, 90.0f)},
             // /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f)),
-            /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f), verticalSpeed),
+            /*speed = */ glm::vec3(0.3f, 0.3f, verticalSpeed),
+            // /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), p6::random::number(-0.5f, 0.5f), verticalSpeed),
         });
     }
     // Print des statistiques direction verticale
@@ -215,6 +216,9 @@ int main()
     // Import modèles 3D
     Model Carl;
     Carl.load_model("assets/models/carl_doug.obj");
+
+    Model Boids_Kite;
+    Boids_Kite.load_model("assets/models/Kite.obj");
 
     Model clouds;
     clouds.load_model("assets/models/clouds2.obj");
@@ -281,6 +285,9 @@ int main()
     GLuint vboBallons = bindVBO(ballons.vertices);
     GLuint vaoBallons = bindVAO(vboBallons);
 
+    GLuint vboBoidsKite = bindVBO(Boids_Kite.vertices);
+    GLuint vaoBoidsKite = bindVAO(vboBoidsKite);
+
     // Activer le test de profondeur du GPU
     glEnable(GL_DEPTH_TEST);
 
@@ -291,9 +298,13 @@ int main()
     // Initialiser les déplacements
     // Translation pour chaque objet
     glm::vec3 benchTranslation(-40.0f, 1.0f, -80.0f);
-    glm::vec3 ballonsTranslation(-30.0f, -15.f, 50.f);
+    glm::vec3 ballonsTranslation(-35.0f, -12.f, 13.f);
+    glm::vec3 rocksTranslation(-20.f, 0.f, -80.f); // à côté du banc
+    glm::vec3 rocksTranslation2(30.f, 0.f, -60.f);
+    glm::vec3 rocksTranslation3(40.f, 0.f, -20.f);
+    glm::vec3 rocksTranslation4(-10.f, 0.f, 90.f);
 
-    const int              nbHouses = 1; // Nombre de maisons à placer
+    const int              nbHouses = 2; // Nombre de maisons à placer
     std::vector<glm::vec3> houseTranslation;
     for (int i = 0; i < nbHouses; i++)
     {
@@ -491,11 +502,11 @@ int main()
             {
                 if (textures[i] == "Texture 1")
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight, typeLight);
+                    boids[i].draw(vaoBoidsKite, static_cast<GLsizei>(Boids_Kite.vertices.size()), glm::vec3{1.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[9], coefLight, typeLight);
                 }
                 else
                 {
-                    boids[i].draw(vaoBoid, static_cast<GLsizei>(boid.size()), glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight, typeLight);
+                    boids[i].draw(vaoBoidsKite, static_cast<GLsizei>(Boids_Kite.vertices.size()), glm::vec3{1.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[10], coefLight, typeLight);
                 }
             }
 
@@ -531,23 +542,26 @@ int main()
         renderObject(vaoCube, static_cast<GLsizei>(cube.size()), glm::vec3{0.f, 25.f, 0.f}, glm::vec3{1.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[1], coefLight, typeLight);
 
         // std::cout << "Placements des maisons sur la carte : " << std::endl;
-        for (int i = 0; i < nbHouses; ++i)
-        {
-            // renderObject(
-            //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
-            // );
-            renderObject(
-                vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[i], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
-            );
-            // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
-        }
+        // for (int i = 0; i < nbHouses; ++i)
+        // {
+        // renderObject(
+        //     vaoHouse, static_cast<GLsizei>(house.size()), houseTranslation[i], viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[3]
+        // );
+        renderObject(
+            vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), houseTranslation[1], glm::vec3{4.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
+        );
+        renderObject(
+            vaoHouse3D, static_cast<GLsizei>(House.vertices.size()), glm::vec3{200.f}, glm::vec3{0.1f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight
+        );
+        // cout << "Maison " << i + 1 << " : Position -> " << houseTranslation << endl;
+        // }
 
         // Vérifier la collision avec chaque maison
         for (int i = 0; i < nbHouses; ++i)
         {
             for (int j = 0; j < nbHouses; ++j)
             {
-                if (detectCollision(characterPosition, houseTranslation[j] + 3.f, 2, 12))
+                if (detectCollision(characterPosition, houseTranslation[j], 2, 12))
                 {
                     collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
                 }
@@ -567,7 +581,7 @@ int main()
             // Vérifier la collision avec chaque arbre
             for (int j = 0; j < trees_number; ++j)
             {
-                if (detectCollision(characterPosition, treeTranslation[j], 2, 3))
+                if (detectCollision(characterPosition, treeTranslation[i], 2, 3))
                 {
                     collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.03f);
                 }
@@ -602,8 +616,71 @@ int main()
             collisionDetectedRight = false;
         }
 
+        if (detectCollision(characterPosition, ballonsTranslation, 2, 18))
+        {
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+        }
+        else
+        {
+            collisionDetectedUp    = false;
+            collisionDetectedDown  = false;
+            collisionDetectedLeft  = false;
+            collisionDetectedRight = false;
+        }
+
+        if (detectCollision(characterPosition, rocksTranslation, 2, 10))
+        {
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+        }
+        else
+        {
+            collisionDetectedUp    = false;
+            collisionDetectedDown  = false;
+            collisionDetectedLeft  = false;
+            collisionDetectedRight = false;
+        }
+
+        if (detectCollision(characterPosition, rocksTranslation2, 2, 10))
+        {
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+        }
+        else
+        {
+            collisionDetectedUp    = false;
+            collisionDetectedDown  = false;
+            collisionDetectedLeft  = false;
+            collisionDetectedRight = false;
+        }
+
+        if (detectCollision(characterPosition, rocksTranslation3, 2, 10))
+        {
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+        }
+        else
+        {
+            collisionDetectedUp    = false;
+            collisionDetectedDown  = false;
+            collisionDetectedLeft  = false;
+            collisionDetectedRight = false;
+        }
+
+        if (detectCollision(characterPosition, rocksTranslation4, 2, 10))
+        {
+            collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f);
+        }
+        else
+        {
+            collisionDetectedUp    = false;
+            collisionDetectedDown  = false;
+            collisionDetectedLeft  = false;
+            collisionDetectedRight = false;
+        }
+
         renderObject(vaoBallons, static_cast<GLsizei>(ballons.vertices.size()), ballonsTranslation, glm::vec3{3.f}, 1.57f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight);
-        // renderObject(vaoClouds, static_cast<GLsizei>(clouds.vertices.size()), cloudsTranslation, glm::vec3{10.f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight);
+        renderObject(vaoRocks, static_cast<GLsizei>(rocks.vertices.size()), rocksTranslation, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight);
+        renderObject(vaoRocks, static_cast<GLsizei>(rocks.vertices.size()), rocksTranslation2, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight);
+        renderObject(vaoRocks, static_cast<GLsizei>(rocks.vertices.size()), rocksTranslation3, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight);
+        renderObject(vaoRocks, static_cast<GLsizei>(rocks.vertices.size()), rocksTranslation4, glm::vec3{2.5f}, 0.f, viewMatrix, ProjMatrix, NormalMatrix, ObjectProgram, textureID[11], coefLight, typeLight);
 
         glBindVertexArray(0);
     };
@@ -618,7 +695,7 @@ int main()
     glDeleteVertexArrays(1, &vaoCube);
     glDeleteVertexArrays(1, &vaoBoid);
     glDeleteVertexArrays(1, &vaoFloor);
-    glDeleteVertexArrays(1, &vaoTree);
+    // glDeleteVertexArrays(1, &vaoTree);
     glDeleteVertexArrays(1, &vaoTree1);
     glDeleteVertexArrays(1, &vaoTree2);
     glDeleteVertexArrays(1, &vaoCarl);
