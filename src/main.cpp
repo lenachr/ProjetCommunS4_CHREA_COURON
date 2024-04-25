@@ -106,7 +106,6 @@ int main()
     ObjectProgram ObjectProgram{};
 
     //  Chargement des textures
-    img::Image textureTree     = p6::load_image_buffer("assets/textures/tree.jpg");
     img::Image textureSky      = p6::load_image_buffer("assets/textures/sky.jpg");
     img::Image textureWood     = p6::load_image_buffer("assets/textures/wood.jpg");
     img::Image textureFloor    = p6::load_image_buffer("assets/textures/floor02.jpg");
@@ -118,7 +117,6 @@ int main()
     glGenTextures(7, textureID.data());
 
     // Configuration des textures
-    bindTexture(textureID, 0, textureTree);
     bindTexture(textureID, 1, textureSky);
     bindTexture(textureID, 2, textureWood);
     bindTexture(textureID, 3, textureFloor);
