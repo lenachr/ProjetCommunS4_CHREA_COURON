@@ -149,7 +149,7 @@ int main()
     Model tree2;
     tree2.load_model("assets/models/tree2.obj");
     Model ballons;
-    ballons.load_model("assets/models/ballons3.obj");
+    ballons.load_model("assets/models/ballons.obj");
 
     // Créer vao et vbo
 
