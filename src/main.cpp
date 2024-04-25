@@ -198,7 +198,7 @@ int main()
 
     // Translation pour chaque objet
     glm::vec3 benchTranslation(-40.0f, 1.0f, -80.0f);
-    glm::vec3 ballonsTranslation(-38.0f, -3.f, 0.5f);
+    glm::vec3 ballonsTranslation(-35.0f, -3.f, 2.f);
     glm::vec3 rocksTranslation(-20.f, 0.f, -80.f); // à côté du banc
     glm::vec3 rocksTranslation2(30.f, 0.f, -60.f);
     glm::vec3 rocksTranslation3(40.f, 0.f, -20.f);
@@ -476,7 +476,7 @@ int main()
         {
             for (int j = 0; j < nbHouses; ++j)
             {
-                if (detectCollision(characterPosition, houseTranslation[j], 2, 12))
+                if (detectCollision(characterPosition, houseTranslation[j], 2, 10))
                 {
                     collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.3f, collisionDetectedUp, collisionDetectedDown, collisionDetectedLeft, collisionDetectedRight);
                 }
@@ -526,7 +526,7 @@ int main()
         }
 
         // Collision avec les ballons
-        if (detectCollision(characterPosition, ballonsTranslation, 2, 12))
+        if (detectCollision(characterPosition, ballonsTranslation, 2, 10))
         {
             collisions(&ctx, freeflyCamera, upPressed, downPressed, leftPressed, rightPressed, 0.5f, collisionDetectedUp, collisionDetectedDown, collisionDetectedLeft, collisionDetectedRight);
         }
