@@ -408,13 +408,13 @@ int main()
             if (boidFalling(timeStart))
             {
                 boids[i].falling = true;
-                if (boid[i].position.y <= 0.f)
-                {
-                    // Supprimer ce boid
-                    // boids.erase(boids.begin() + i);
-                    // boids_number--;
-                    // i--;
-                }
+                // if (boid[i].position.y <= 0.f)
+                // {
+                //     // Supprimer ce boid
+                //     // boids.erase(boids.begin() + i);
+                //     // boids_number--;
+                //     // i--;
+                // }
             }
 
             boids[i].update(boids, alignement_coeff, cohesion_coeff, separation_coeff);
