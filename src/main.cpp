@@ -93,7 +93,7 @@ int main()
         }
         boids.push_back(Boid{
             /*position = */ glm::vec3{p6::random::number(-95.f, 95.0f), p6::random::number(60.f, 90.f), p6::random::number(-90.f, 90.0f)},
-            /*speed = */ glm::vec3(0.3f, 0.3f, verticalSpeed),
+            /*speed = */ glm::vec3(p6::random::number(-0.5f, 0.5f), verticalSpeed, p6::random::number(-0.5f, 0.5f)),
         });
     }
 

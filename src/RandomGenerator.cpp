@@ -26,7 +26,6 @@ double randomProbability()
     return U;
 }
 
-// A faire
 float variance(int loi, float p, float q)
 {
     switch (loi)
@@ -48,7 +47,6 @@ float variance(int loi, float p, float q)
     // return variance;
 }
 
-// A faire
 float esperance(int loi, float p, float q)
 {
     switch (loi)
@@ -120,9 +118,9 @@ bool boidFalling(float timeStart)
     // std::cout << "Variance : " << variance(2, lambda, 0) << std::endl;
 
     float timeNow     = static_cast<int>(glfwGetTime() * 1000.0); // Le tmeps actuel
-    float timeElapsed = (timeNow - timeStart) / 1000.0f;          // Le temps écoulé depuis le début de la simulation
+    float timeElapsed = (timeNow - timeStart) / 10000.0f;         // Le temps écoulé depuis le début de la simulation
 
-    double timeUntilNextFall = timeBetweenFalls(lambda) * 10000; // On choisi aléatoirement le temps avant la prochaine chance de chute
+    double timeUntilNextFall = timeBetweenFalls(lambda) * 30000; // On choisi aléatoirement le temps avant la prochaine chance de chute
 
     // On vérifie si on est en dehors de l'intervalle de temps pour la prochaine chance de chute et si on doit chuter
     if (timeUntilNextFall <= X && boidFall(probabilityOfFalling) && timeUntilNextFall > timeElapsed)
