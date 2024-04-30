@@ -1,6 +1,7 @@
 #pragma once
 #include <chrono>
 #include <glimac/common.hpp>
+#include "boid.hpp"
 #include "p6/p6.h"
 
 double randomProbability();
@@ -14,7 +15,7 @@ bool   boidFall(double probability);
 float generateRandomPositionTree();
 // Loi exponentielle qui fait tomber des cerf-volants
 // bool boidFalling(auto start, auto now);
-bool boidFalling(float timeStart);
+bool boidFalling(float timeStart, float boidPosition);
 // Fonction pour choisir aléatoirement une texture de boid, loi de distribution uniforme
 std::string chooseBoidTexture();
 // Choix de la couleur de la pierre selon une distribution normale

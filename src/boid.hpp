@@ -26,9 +26,9 @@ private:
     void  cohesion(const std::vector<Boid>& allBoids, double cohesionDistance, double cohesionFactor);
 
 private:
-    glm::vec3 position;
     glm::vec3 speed;
 
 public:
-    bool falling;
+    glm::vec3 position;
+    bool      falling;
 };

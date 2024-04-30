@@ -107,11 +107,13 @@ double timeBetweenFalls(double lambda)
 }
 
 // Loi exponentielle qui fait tomber des cerf-volants
-bool boidFalling(float timeStart)
+bool boidFalling(float timeStart, float boidPosition)
 {
-    const double probabilityOfFalling = 0.2; // Probabilité de chute d'un boid
-    const double lambda               = 0.1; // Paramètre lambda de la loi exponentielle pour le temps entre chaque chute
-    const int    X                    = 15;  // Intervalle de temps entre chaque chute (en secondes)
+    const double probabilityOfFallingBottom = 0.2; // Probabilité de chute d'un boid
+    const double probabilityOfFallingMiddle = 0.4; // Probabilité de chute d'un boid
+    const double probabilityOfFallingTop    = 0.6; // Probabilité de chute d'un boid
+    const double lambda                     = 0.1; // Paramètre lambda de la loi exponentielle pour le temps entre chaque chute
+    const int    X                          = 15;  // Intervalle de temps entre chaque chute (en secondes)
 
     // Affichage variance et esperance
     // std::cout << "Esperance : " << esperance(2, lambda, 0) << std::endl;
@@ -123,9 +125,20 @@ bool boidFalling(float timeStart)
     double timeUntilNextFall = timeBetweenFalls(lambda) * 30000; // On choisi aléatoirement le temps avant la prochaine chance de chute
 
     // On vérifie si on est en dehors de l'intervalle de temps pour la prochaine chance de chute et si on doit chuter
-    if (timeUntilNextFall <= X && boidFall(probabilityOfFalling) && timeUntilNextFall > timeElapsed)
+    // Chaine de markov qui attribue différentes probabilités en fonction de la position actuelle du boid
+    if (timeUntilNextFall <= X && boidFall(probabilityOfFallingBottom) && timeUntilNextFall > timeElapsed && boidPosition > 30 && boidPosition < 30 + 23.33)
     {
-        // std::cout << "Un boid tombe au sol apres " << timeElapsed << " secondes." << std::endl;
+        std::cout << "Un boid tombe au sol apres " << timeElapsed << " secondes. Il etait dans la zone basse." << std::endl;
+        return true;
+    }
+    else if (timeUntilNextFall <= X && boidFall(probabilityOfFallingMiddle) && timeUntilNextFall > timeElapsed && boidPosition > 30 + 23.33 && boidPosition < 30 + 2 * 23.33)
+    {
+        std::cout << "Un boid tombe au sol apres " << timeElapsed << " secondes. Il etait dans la zone du milieu." << std::endl;
+        return true;
+    }
+    else if (timeUntilNextFall <= X && boidFall(probabilityOfFallingTop) && timeUntilNextFall > timeElapsed && boidPosition > 30 + 2 * 23.33 && boidPosition < 30 + 3 * 23.33)
+    {
+        std::cout << "Un boid tombe au sol apres " << timeElapsed << " secondes. Il etait dans la zone haute." << std::endl;
         return true;
     }
     else

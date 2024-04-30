@@ -405,7 +405,7 @@ int main()
                 }
             }
 
-            if (boidFalling(timeStart))
+            if (boidFalling(timeStart, boids[i].position.y))
             {
                 boids[i].falling = true;
                 // if (boid[i].position.y <= 0.f)
